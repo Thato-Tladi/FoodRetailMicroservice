@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "${LOCAL_FLYWAY_PASSWORD}"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${LOCAL_FLYWAY_PASSWORD}' -Q 'SELECT 1'"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  initdb:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    depends_on:
+      mssql:
+        condition: service_healthy
+    environment:
+      SA_PASSWORD: "${LOCAL_FLYWAY_PASSWORD}"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - ./init-db.sh:/init-db.sh
+    entrypoint: ["/bin/bash", "/init-db.sh"]
+
+  flyway:
+    image: flyway/flyway
+    depends_on:
+      initdb:
+        condition: service_completed_successfully
+    environment:
+      FLYWAY_URL: "${LOCAL_FLYWAY_URL}"
+      FLYWAY_USER: "${LOCAL_FLYWAY_USER}"
+      FLYWAY_PASSWORD: "${LOCAL_FLYWAY_PASSWORD}"
+    command: ["-url=jdbc:sqlserver://mssql:1433;trustServerCertificate=true;databaseName=FoodRetailMicroservice", "migrate"]
+    volumes:
+      - ./flyway/conf/flyway.conf:/flyway/conf/flyway.conf
+      - ./flyway/migrations:/flyway/sql
+
+volumes:
+  mssql_data:

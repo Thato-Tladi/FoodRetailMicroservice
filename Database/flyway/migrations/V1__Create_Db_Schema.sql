@@ -1,0 +1,5 @@
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'FoodRetailMicroserviceSchema')
+BEGIN
+    EXEC('CREATE SCHEMA FoodRetailMicroserviceSchema;');
+END
+GO
