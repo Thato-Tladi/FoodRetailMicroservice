@@ -122,7 +122,7 @@ resource "aws_db_subnet_group" "sql_subnet_group" {
     }
 }
 
-/*
+
 # RDS SQL Server database instance
 resource "aws_db_instance" "foodretail-rds" {
   allocated_storage = 20
@@ -137,7 +137,7 @@ resource "aws_db_instance" "foodretail-rds" {
   multi_az = false
   db_subnet_group_name = aws_db_subnet_group.sql_subnet_group.name
   vpc_security_group_ids = [aws_security_group.database_sg.id]
-}*/
+}
 
 
 #Application creation
@@ -208,7 +208,7 @@ resource "aws_elastic_beanstalk_environment" "foodretail-elastic-beanstalk-env" 
     value     = "200"
   }
 
-  depends_on = [aws_security_group.foodretail-instance-sg/*, aws_security_group.database_sg*/]
+  depends_on = [aws_security_group.foodretail-instance-sg, aws_security_group.database_sg]
 }
 
 #Setting up resources for S3 static wbesite

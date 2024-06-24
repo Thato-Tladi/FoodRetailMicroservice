@@ -3,7 +3,7 @@ name: Terraform Deployment
 on:
   push:
     branches:
-      - feature/initial-ci-cd-setup
+      - master
     paths:
       - 'Infrastructure/**'
   workflow_dispatch:
