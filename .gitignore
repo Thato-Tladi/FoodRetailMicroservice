@@ -23,3 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 .env
+.terraform.lock.hcl
+terraform.tfstate
+.terraform/
