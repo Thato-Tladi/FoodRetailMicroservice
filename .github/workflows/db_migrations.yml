@@ -1,89 +1,89 @@
 name: "Database CI/CD"
-  on:
-    push:
-      branches: [ "main" ]
-      paths:
-        - 'Database/flyway/migrations/**'
-    workflow_dispatch:
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'Database/flyway/migrations/**'
+  workflow_dispatch:
 
-  jobs:
-    SetupDatabase:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Install tools
-          run: |
-            sudo apt-get update
-            sudo apt-get install -y mssql-tools unixodbc-dev jq
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            if [ -d "/usr/local/aws-cli/v2/current" ]; then
-              sudo ./aws/install --update
-            else
-              sudo ./aws/install
-            fi
+jobs:
+  SetupDatabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mssql-tools unixodbc-dev jq
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          if [ -d "/usr/local/aws-cli/v2/current" ]; then
+            sudo ./aws/install --update
+          else
+            sudo ./aws/install
+          fi
 
-        - name: Configure AWS CLI
-          run: |
-            aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws configure set default.region ${{ secrets.AWS_REGION }}
+      - name: Configure AWS CLI
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region ${{ secrets.AWS_REGION }}
 
-        - name: Retrieve and export secrets
-          run: |
-            echo "Retrieving secrets..."
-            DB_CREDENTIALS_JSON=$(aws secretsmanager get-secret-value --secret-id mssql-server --query 'SecretString' --output json | jq -r '.')
-            echo "DB_USERNAME=$(echo $DB_CREDENTIALS_JSON | jq -r '.username')" >> $GITHUB_ENV
-            echo "DB_PASSWORD=$(echo $DB_CREDENTIALS_JSON | jq -r '.password')" >> $GITHUB_ENV
-            echo "DB_PORT=$(echo $DB_CREDENTIALS_JSON | jq -r '.port')" >> $GITHUB_ENV
-            echo "DB_HOST=$(echo $DB_CREDENTIALS_JSON | jq -r '.host')" >> $GITHUB_ENV
-            echo "Secrets retrieved successfully."
+      - name: Retrieve and export secrets
+        run: |
+          echo "Retrieving secrets..."
+          DB_CREDENTIALS_JSON=$(aws secretsmanager get-secret-value --secret-id mssql-server --query 'SecretString' --output json | jq -r '.')
+          echo "DB_USERNAME=$(echo $DB_CREDENTIALS_JSON | jq -r '.username')" >> $GITHUB_ENV
+          echo "DB_PASSWORD=$(echo $DB_CREDENTIALS_JSON | jq -r '.password')" >> $GITHUB_ENV
+          echo "DB_PORT=$(echo $DB_CREDENTIALS_JSON | jq -r '.port')" >> $GITHUB_ENV
+          echo "DB_HOST=$(echo $DB_CREDENTIALS_JSON | jq -r '.host')" >> $GITHUB_ENV
+          echo "Secrets retrieved successfully."
 
-        - name: Construct SQLCMD_URL
-          run: |
-            echo "SQLCMD_URL=$DB_HOST,$DB_PORT" >> $GITHUB_ENV
-            echo "Constructed SQLCMD_URL: $SQLCMD_URL"
+      - name: Construct SQLCMD_URL
+        run: |
+          echo "SQLCMD_URL=$DB_HOST,$DB_PORT" >> $GITHUB_ENV
+          echo "Constructed SQLCMD_URL: $SQLCMD_URL"
 
-        - name: Create Database If Not Exists
-          run: |
-            echo "Using SQLCMD_URL: $SQLCMD_URL"
-            sqlcmd -S "${{ env.SQLCMD_URL }}" -U "${{ env.DB_USERNAME }}" -P "${{ env.DB_PASSWORD }}" -Q "IF DB_ID('FoodRetailMicroservice') IS NULL BEGIN CREATE DATABASE FoodRetailMicroservice; END;"
+      - name: Create Database If Not Exists
+        run: |
+          echo "Using SQLCMD_URL: $SQLCMD_URL"
+          sqlcmd -S "${{ env.SQLCMD_URL }}" -U "${{ env.DB_USERNAME }}" -P "${{ env.DB_PASSWORD }}" -Q "IF DB_ID('FoodRetailMicroservice') IS NULL BEGIN CREATE DATABASE FoodRetailMicroservice; END;"
 
-    MigrateDatabase:
-      needs: SetupDatabase
-      runs-on: ubuntu-latest
-      steps:
-        - name: Check out code
-          uses: actions/checkout@v2
+  MigrateDatabase:
+    needs: SetupDatabase
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
 
-        - name: Configure AWS CLI (repeat configuration)
-          run: |
-            aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws configure set default.region ${{ secrets.AWS_REGION }}
+      - name: Configure AWS CLI
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region ${{ secrets.AWS_REGION }}
 
-        - name: Retrieve and export secrets (repeat this step)
-          run: |
-            echo "Retrieving secrets again..."
-            DB_CREDENTIALS_JSON=$(aws secretsmanager get-secret-value --secret-id mssql-server --query 'SecretString' --output json | jq -r '.')
-            echo "DB_USERNAME=$(echo $DB_CREDENTIALS_JSON | jq -r '.username')" >> $GITHUB_ENV
-            echo "DB_PASSWORD=$(echo $DB_CREDENTIALS_JSON | jq -r '.password')" >> $GITHUB_ENV
-            echo "DB_PORT=$(echo $DB_CREDENTIALS_JSON | jq -r '.port')" >> $GITHUB_ENV
-            echo "DB_HOST=$(echo $DB_CREDENTIALS_JSON | jq -r '.host')" >> $GITHUB_ENV
+      - name: Retrieve and export secrets
+        run: |
+          echo "Retrieving secrets"
+          DB_CREDENTIALS_JSON=$(aws secretsmanager get-secret-value --secret-id mssql-server --query 'SecretString' --output json | jq -r '.')
+          echo "DB_USERNAME=$(echo $DB_CREDENTIALS_JSON | jq -r '.username')" >> $GITHUB_ENV
+          echo "DB_PASSWORD=$(echo $DB_CREDENTIALS_JSON | jq -r '.password')" >> $GITHUB_ENV
+          echo "DB_PORT=$(echo $DB_CREDENTIALS_JSON | jq -r '.port')" >> $GITHUB_ENV
+          echo "DB_HOST=$(echo $DB_CREDENTIALS_JSON | jq -r '.host')" >> $GITHUB_ENV
 
-        - name: Install Flyway
-          run: |
-            wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/9.22.0/flyway-commandline-9.22.0-linux-x64.tar.gz | tar xvz
-            sudo ln -s `pwd`/flyway-9.22.0/flyway /usr/local/bin/flyway
+      - name: Install Flyway
+        run: |
+          wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/9.22.0/flyway-commandline-9.22.0-linux-x64.tar.gz | tar xvz
+          sudo ln -s `pwd`/flyway-9.22.0/flyway /usr/local/bin/flyway
 
-        - name: Print working directory
-          run: pwd
+      - name: Print working directory
+        run: pwd
 
-        - name: List all directory contents
-          run: ls -R
+      - name: List all directory contents
+        run: ls -R
 
-        - name: List migrations folder contents
-          run: ls -l Database/flyway/migrations
+      - name: List migrations folder contents
+        run: ls -l Database/flyway/migrations
 
-        - name: Run Flyway Migrations
-          run: |
-            flyway -user="${{ env.DB_USERNAME }}" -password="${{ env.DB_PASSWORD }}" -url="jdbc:sqlserver://${{ env.DB_HOST }}:${{ env.DB_PORT }};databaseName=FoodRetailMicroservice;encrypt=true;trustServerCertificate=true" -locations="filesystem:Database/flyway/migrations" migrate
+      - name: Run Flyway Migrations
+        run: |
+          flyway -user="${{ env.DB_USERNAME }}" -password="${{ env.DB_PASSWORD }}" -url="jdbc:sqlserver://${{ env.DB_HOST }}:${{ env.DB_PORT }};databaseName=FoodRetailMicroservice;encrypt=true;trustServerCertificate=true" -locations="filesystem:Database/flyway/migrations" migrate
