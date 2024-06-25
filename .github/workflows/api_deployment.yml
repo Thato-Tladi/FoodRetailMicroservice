@@ -8,51 +8,74 @@ on:
       - 'Api/**'
   workflow_dispatch:
 
+env:
+  DOTNET_VERSION: '8.0.*'
+  AWS_REGION: 'us-west-2'
+  BUILD_ARTIFACT: 'api_build_artifact.zip'
+  DEPLOY_PACKAGE_NAME: 'deploy_package.zip'
+
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
+  build_and_create_Artifact:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: Api
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v3
-
-      - name: Setup .NET
+      
+      - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '8.0'
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      
+      - name: Install dependencies
+        run: dotnet restore
 
-      - name: Build Release
+      - name: Build
+        run: dotnet build --configuration Release
+      
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
+
+      - name: Publish
+        run: dotnet publish -c Release -o ${{ github.workspace }}/out
+
+      - name: Zip Package
         run: |
-          cd Api
-          dotnet build --configuration Release
+          cd ${{ github.workspace }}/out/
+          Compress-Archive *.* -DestinationPath ${{ env.BUILD_ARTIFACT }}
+          Copy-Item -Path ${{ github.workspace }}/Api/aws-windows-deployment-manifest.json -Destination ${{ github.workspace }}/out/
+          Compress-Archive -Path '*.zip', 'aws-windows-deployment-manifest.json' -DestinationPath ${{ env.DEPLOY_PACKAGE_NAME }}
 
-      - name: Publish .NET API
-        run: |
-          cd Api
-          dotnet publish -c Release -o publish
-
-      - name: Install Python and Pip
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3 python3-pip
-
-      - name: Install EB CLI via pip
-        run: |
-          sudo pip3 install awsebcli --upgrade
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.0
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          name: Application_Artifact
+          path: ${{ github.workspace }}/out/${{ env.DEPLOY_PACKAGE_NAME }}
 
-      - name: Deploy to Existing Environment
-        run: |
-          cd Api/publish
-          eb init foodretail-application --region ${{ secrets.AWS_REGION }} -p "64bit Windows Server 2022 v2.15.2 running IIS 10.0"
-          eb deploy foodretail-env
+  ServerDeployment:
+    needs: build_and_create_Artifact
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: Api
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-      - name: Cleanup
-        run: |
-          rm -rf Api/publish
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: Application_Artifact
+  
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: foodretail-application
+          environment_name: foodretail-env
+          version_label: ${{ github.run_number }}
+          region: ${{ env.AWS_REGION }}
+          deployment_package: ${{ env.DEPLOY_PACKAGE_NAME }}
