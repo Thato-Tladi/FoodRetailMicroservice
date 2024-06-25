@@ -10,12 +10,28 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Frontend to S3
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install Dependencies
+        run: npm install
+        working-directory: ./Frontend
+
+      - name: Build React App
+        run: npm run build
+        working-directory: ./Frontend
+
+      - name: List Output of Build Directory
+        run: ls -al ./build
+        working-directory: ./Frontend
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -23,6 +39,9 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: 'eu-west-1'
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
 
       - name: Retrieve S3 Bucket Name from Secrets Manager
         id: retrieve-bucket-name
@@ -32,35 +51,9 @@ jobs:
           echo "BUCKET_NAME=$BUCKET_NAME" >> $GITHUB_ENV
           echo "::set-output name=BUCKET_NAME::$BUCKET_NAME"
 
-      - name: Verify S3 Bucket Policy
-        run: |
-          BUCKET_NAME="${{ steps.retrieve-bucket-name.outputs.BUCKET_NAME }}"
-          POLICY=$(aws s3api get-bucket-policy --bucket $BUCKET_NAME --query 'Policy' --output text || echo "NoPolicy")
-          
-          if [[ "$POLICY" == "NoPolicy" ]]; then
-            echo "Bucket policy not found. Applying the GetBucket policy."
-            aws s3api put-bucket-policy --bucket $BUCKET_NAME --policy '{
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Sid": "PublicReadGetObject",
-                  "Effect": "Allow",
-                  "Principal": "*",
-                  "Action": "s3:GetObject",
-                  "Resource": "arn:aws:s3:::'"$BUCKET_NAME"'/*"
-                }
-              ]
-            }'
-          else
-            echo "Bucket policy already applied."
-          fi
-
-      - name: Sync Frontend to S3 Bucket
-        run: |
-          BUCKET_NAME="${{ steps.retrieve-bucket-name.outputs.BUCKET_NAME }}"
-          aws s3 sync Frontend/ s3://$BUCKET_NAME --delete
+      - name: Sync Build to S3 Bucket
+        run: aws s3 sync ./Frontend/build/ s3://$BUCKET_NAME/ --delete
 
       - name: Apply Static Website Configuration
-        run: |
-          BUCKET_NAME="${{ steps.retrieve-bucket-name.outputs.BUCKET_NAME }}"
-          aws s3 website s3://$BUCKET_NAME --index-document index.html --error-document 404.html
+        run: aws s3 website s3://$BUCKET_NAME --index-document index.html --error-document 404.html
+
