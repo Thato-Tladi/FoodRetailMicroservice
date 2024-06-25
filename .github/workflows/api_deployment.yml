@@ -29,6 +29,10 @@ jobs:
         run: npm run build
         working-directory: ./Frontend
 
+      - name: List Output of Build Directory
+        run: ls -al ./build
+        working-directory: ./Frontend
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
