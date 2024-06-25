@@ -41,18 +41,19 @@ jobs:
       - name: Publish
         run: dotnet publish -c Release -o ${{ github.workspace }}/out
 
-      - name: Zip Package
+      - name: Prepare Deployment Package
         run: |
-          cd ${{ github.workspace }}/out/
-          Compress-Archive *.* -DestinationPath ${{ env.BUILD_ARTIFACT }}
+          # Ensure aws-windows-deployment-manifest.json is in the output directory
           Copy-Item -Path ${{ github.workspace }}/Api/aws-windows-deployment-manifest.json -Destination ${{ github.workspace }}/out/
-          Compress-Archive -Path '*.zip', 'aws-windows-deployment-manifest.json' -DestinationPath ${{ env.DEPLOY_PACKAGE_NAME }}
+          cd ${{ github.workspace }}/out/
+          # Compress all files including the manifest into the final deployment package
+          Compress-Archive -Path * -DestinationPath ${{ github.workspace }}/${{ env.DEPLOY_PACKAGE_NAME }}
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
         with:
           name: Application_Artifact
-          path: ${{ github.workspace }}/out/${{ env.DEPLOY_PACKAGE_NAME }}
+          path: ${{ github.workspace }}/${{ env.DEPLOY_PACKAGE_NAME }}
 
   ServerDeployment:
     needs: build_and_create_Artifact
@@ -68,7 +69,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: Application_Artifact
-  
+          path: out
+
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v21
         with:
@@ -78,5 +80,5 @@ jobs:
           environment_name: foodretail-env
           version_label: ${{ github.run_number }}
           region: ${{ secrets.AWS_REGION }}
-          deployment_package: ${{ env.DEPLOY_PACKAGE_NAME }}
+          deployment_package: out/${{ env.DEPLOY_PACKAGE_NAME }}
           existing_bucket_name: elasticbeanstalk-eu-west-1-924511948270
