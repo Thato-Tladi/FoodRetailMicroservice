@@ -10,11 +10,14 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(
-  (config) => {
-    const token = getToken();
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+  async (config) => {
+    try {
+      const token = await getToken();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    } catch (error) {
+      console.error("Error setting token:", error);
     }
     return config;
   },

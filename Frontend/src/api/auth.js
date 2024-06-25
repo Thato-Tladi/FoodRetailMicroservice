@@ -1,13 +1,13 @@
-const getToken = () => {
-  return sessionStorage.getItem("jwtToken");
+import { fetchAuthSession } from "aws-amplify/auth";
+const getToken = async () => {
+  try {
+    const session = await fetchAuthSession();
+    const idToken = session.tokens?.idToken?.toString();
+    return idToken;
+  } catch (error) {
+    console.error("Error fetching token:", error);
+    return null;
+  }
 };
 
-const setToken = (token) => {
-  sessionStorage.setItem("jwtToken", token);
-};
-
-const removeToken = () => {
-  sessionStorage.removeItem("jwtToken");
-};
-
-export { getToken, setToken, removeToken };
+export { getToken };
