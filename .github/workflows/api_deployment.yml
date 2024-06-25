@@ -80,7 +80,7 @@ jobs:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: foodretail-application
-          environment_name: foodretail-env
+          environment_name: test-env
           version_label: ${{ github.run_number }}
           region: ${{ secrets.AWS_REGION }}
           deployment_package: out/${{ env.DEPLOY_PACKAGE_NAME }}
