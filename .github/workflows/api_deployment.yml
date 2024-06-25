@@ -11,7 +11,7 @@ on:
 env:
   DOTNET_VERSION: '8.0.*'
   AWS_REGION: 'eu-west-1'
-  BUILD_ARTIFACT: 'api_build_artifact.zip'
+  BUILD_ARTIFACT: "dotnet-app-${{ github.sha }}.zip"
   DEPLOY_PACKAGE_NAME: 'site.zip'
 
 jobs:
