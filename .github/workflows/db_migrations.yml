@@ -49,14 +49,14 @@ jobs:
           echo "Using SQLCMD_URL: $SQLCMD_URL"
           sqlcmd -S "${{ env.SQLCMD_URL }}" -U "${{ env.DB_USERNAME }}" -P "${{ env.DB_PASSWORD }}" -Q "IF DB_ID('FoodRetailMicroservice') IS NULL BEGIN CREATE DATABASE FoodRetailMicroservice; END;"
 
-   MigrateDatabase:
+  MigrateDatabase:
     needs: SetupDatabase
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Configure AWS CLI
+      - name: Configure AWS CLI (repeat configuration)
         run: |
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
