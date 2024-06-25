@@ -1,4 +1,13 @@
 name: Deploy API to Beanstalk
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Api/**'
+  workflow_dispatch:
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
