@@ -12,7 +12,7 @@ env:
   DOTNET_VERSION: '8.0.*'
   AWS_REGION: 'eu-west-1'
   BUILD_ARTIFACT: 'api_build_artifact.zip'
-  DEPLOY_PACKAGE_NAME: 'deploy_package.zip'
+  DEPLOY_PACKAGE_NAME: 'site.zip'
 
 jobs:
   build_and_create_Artifact:
@@ -48,6 +48,9 @@ jobs:
           cd ${{ github.workspace }}/out/
           # Compress all files including the manifest into the final deployment package
           Compress-Archive -Path * -DestinationPath ${{ github.workspace }}/${{ env.DEPLOY_PACKAGE_NAME }}
+          # Verify the contents of the deployment package
+          Expand-Archive -Path ${{ github.workspace }}/${{ env.DEPLOY_PACKAGE_NAME }} -DestinationPath ${{ github.workspace }}/verify/
+          Get-ChildItem -Path ${{ github.workspace }}/verify/
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
