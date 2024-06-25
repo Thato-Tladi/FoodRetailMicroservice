@@ -28,7 +28,7 @@ jobs:
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set default.region ${{ secrets.AWS_REGION }}
-          
+
       - name: Retrieve and export secrets
         run: |
           echo "Retrieving secrets..."
@@ -45,7 +45,7 @@ jobs:
 
       - name: Create Database If Not Exists
         run: |
-          sqlcmd -S ${{ env.SQLCMD_URL }} -U ${{ env.DB_USERNAME }} -P ${{ env.DB_PASSWORD }} -Q "IF DB_ID('SpiderCards') IS NULL BEGIN CREATE DATABASE SpiderCards; END;"
+          sqlcmd -S ${{ env.SQLCMD_URL }} -U ${{ env.DB_USERNAME }} -P ${{ env.DB_PASSWORD }} -Q "IF DB_ID('FoodRetailMicroservice') IS NULL BEGIN CREATE DATABASE SpiderCards; END;"
 
   MigrateDatabase:
     needs: SetupDatabase
@@ -70,4 +70,4 @@ jobs:
 
       - name: Run Flyway Migrations
         run: |
-          flyway -user="$DB_USERNAME" -password="$DB_PASSWORD" -url="jdbc:sqlserver://$DB_HOST:$DB_PORT;databaseName=SpiderCards" -locations="filesystem:Database/flyway/migrations" migrate
+          flyway -user="$DB_USERNAME" -password="$DB_PASSWORD" -url="jdbc:sqlserver://$DB_HOST:$DB_PORT;databaseName=FoodRetailMicroservice" -locations="filesystem:Database/flyway/migrations" migrate
