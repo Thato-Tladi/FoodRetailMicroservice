@@ -49,12 +49,27 @@ jobs:
           echo "Using SQLCMD_URL: $SQLCMD_URL"
           sqlcmd -S "${{ env.SQLCMD_URL }}" -U "${{ env.DB_USERNAME }}" -P "${{ env.DB_PASSWORD }}" -Q "IF DB_ID('FoodRetailMicroservice') IS NULL BEGIN CREATE DATABASE FoodRetailMicroservice; END;"
 
-  MigrateDatabase:
+   MigrateDatabase:
     needs: SetupDatabase
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
         uses: actions/checkout@v2
+
+      - name: Configure AWS CLI
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region ${{ secrets.AWS_REGION }}
+
+      - name: Retrieve and export secrets (repeat this step)
+        run: |
+          echo "Retrieving secrets again..."
+          DB_CREDENTIALS_JSON=$(aws secretsmanager get-secret-value --secret-id mssql-server --query 'SecretString' --output json | jq -r '.')
+          echo "DB_USERNAME=$(echo $DB_CREDENTIALS_JSON | jq -r '.username')" >> $GITHUB_ENV
+          echo "DB_PASSWORD=$(echo $DB_CREDENTIALS_JSON | jq -r '.password')" >> $GITHUB_ENV
+          echo "DB_PORT=$(echo $DB_CREDENTIALS_JSON | jq -r '.port')" >> $GITHUB_ENV
+          echo "DB_HOST=$(echo $DB_CREDENTIALS_JSON | jq -r '.host')" >> $GITHUB_ENV
 
       - name: Install Flyway
         run: |
@@ -72,4 +87,4 @@ jobs:
 
       - name: Run Flyway Migrations
         run: |
-           flyway -user="${{ env.DB_USERNAME }}" -password="${{ env.DB_PASSWORD }}" -url="jdbc:sqlserver://${{ env.DB_HOST }}:${{ env.DB_PORT }};databaseName=FoodRetailMicroservice" -locations="filesystem:Database/flyway/migrations" migrate
+          flyway -user="${{ env.DB_USERNAME }}" -password="${{ env.DB_PASSWORD }}" -url="jdbc:sqlserver://${{ env.DB_HOST }}:${{ env.DB_PORT }};databaseName=FoodRetailMicroservice" -locations="filesystem:Database/flyway/migrations" migrate
