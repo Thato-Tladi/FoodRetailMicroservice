@@ -10,7 +10,7 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.*'
-  AWS_REGION: 'us-west-2'
+  AWS_REGION: 'eu-west-1'
   BUILD_ARTIFACT: 'api_build_artifact.zip'
   DEPLOY_PACKAGE_NAME: 'deploy_package.zip'
 
