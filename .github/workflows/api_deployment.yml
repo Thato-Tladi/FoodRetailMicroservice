@@ -1,3 +1,4 @@
+name: Deploy API to Beanstalk
 jobs:
   deploy:
     runs-on: ubuntu-latest
