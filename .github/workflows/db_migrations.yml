@@ -1,0 +1,69 @@
+name: "Database CI/CD"
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'Database/flyway/migrations/**'
+  workflow_dispatch:
+
+jobs:
+  SetupDatabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mssql-tools unixodbc-dev jq
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
+
+      - name: Configure AWS CLI
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_SECRET_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region us-east-1  # Adjust your region accordingly
+
+      - name: Retrieve secrets from AWS Secrets Manager
+        run: |
+          echo "Retrieving secrets..."
+          export DB_USERNAME=$(aws secretsmanager get-secret-value --secret-id mssql-server --query 'SecretString' --output json | jq -r .username)
+          export DB_PASSWORD=$(aws secretsmanager get-secret-value --secret-id mssql-server --query 'SecretString' --output json | jq -r .password)
+          export DB_PORT=$(aws secretsmanager get-secret-value --secret-id mssql-server --query 'SecretString' --output json | jq -r .port)
+          export DB_HOST=$(aws secretsmanager get-secret-value --secret-id mssql-server --query 'SecretString' --output json | jq -r .host)
+          echo "Secrets retrieved successfully."
+
+      - name: Construct SQLCMD_URL
+        run: |
+          export SQLCMD_URL="Server=$DB_HOST,$DB_PORT;Integrated Security=false;"
+          echo "SQLCMD_URL constructed as $SQLCMD_URL"
+
+      - name: Create Database If Not Exists
+        run: |
+          sqlcmd -S $SQLCMD_URL -U $DB_USERNAME -P $DB_PASSWORD -Q "IF DB_ID('SpiderCards') IS NULL BEGIN CREATE DATABASE SpiderCards; END;"
+
+  MigrateDatabase:
+    needs: SetupDatabase
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Install Flyway
+        run: |
+          wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/9.22.0/flyway-commandline-9.22.0-linux-x64.tar.gz | tar xvz
+          sudo ln -s `pwd`/flyway-9.22.0/flyway /usr/local/bin/flyway
+
+      - name: Print working directory
+        run: pwd
+
+      - name: List all directory contents
+        run: ls -R
+
+      - name: List migrations folder contents
+        run: ls -l Database/flyway/migrations
+
+      - name: Run Flyway Migrations
+        run: |
+          flyway -user="$DB_USERNAME" -password="$DB_PASSWORD" -url="jdbc:sqlserver://$DB_HOST:$DB_PORT;databaseName=SpiderCards" -locations="filesystem:Database/flyway/migrations" migrate
