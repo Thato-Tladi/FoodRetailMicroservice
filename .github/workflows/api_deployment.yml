@@ -77,6 +77,6 @@ jobs:
           application_name: foodretail-application
           environment_name: foodretail-env
           version_label: ${{ github.run_number }}
-          region: ${{ env.AWS_REGION }}
+          region: ${{ secrets.AWS_REGION }}
           deployment_package: ${{ env.DEPLOY_PACKAGE_NAME }}
           existing_bucket_name: elasticbeanstalk-eu-west-1-924511948270
