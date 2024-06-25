@@ -72,4 +72,4 @@ jobs:
 
       - name: Run Flyway Migrations
         run: |
-          flyway -user="${{ env.DB_USERNAME }}" -password="${{ env.DB_PASSWORD }}" -url="jdbc:sqlserver://"${{ env.DB_HOST }}":"${{ env.DB_PORT }}";databaseName=FoodRetailMicroservice" -locations="filesystem:Database/flyway/migrations" migrate
+           flyway -user="${{ env.DB_USERNAME }}" -password="${{ env.DB_PASSWORD }}" -url="jdbc:sqlserver://${{ env.DB_HOST }}:${{ env.DB_PORT }};databaseName=FoodRetailMicroservice" -locations="filesystem:Database/flyway/migrations" migrate
