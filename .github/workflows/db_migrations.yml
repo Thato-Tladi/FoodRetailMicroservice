@@ -17,21 +17,25 @@ jobs:
           sudo apt-get install -y mssql-tools unixodbc-dev jq
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
           unzip awscliv2.zip
-          sudo ./aws/install
+          if [ -d "/usr/local/aws-cli/v2/current" ]; then
+            sudo ./aws/install --update
+          else
+            sudo ./aws/install
+          fi
 
       - name: Configure AWS CLI
         run: |
           aws configure set aws_access_key_id ${{ secrets.AWS_SECRET_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set default.region us-east-1  # Adjust your region accordingly
-
+          aws configure set default.region ${{ secrets.AWS_REGION }}
       - name: Retrieve secrets from AWS Secrets Manager
         run: |
           echo "Retrieving secrets..."
-          export DB_USERNAME=$(aws secretsmanager get-secret-value --secret-id mssql-server --query 'SecretString' --output json | jq -r .username)
-          export DB_PASSWORD=$(aws secretsmanager get-secret-value --secret-id mssql-server --query 'SecretString' --output json | jq -r .password)
-          export DB_PORT=$(aws secretsmanager get-secret-value --secret-id mssql-server --query 'SecretString' --output json | jq -r .port)
-          export DB_HOST=$(aws secretsmanager get-secret-value --secret-id mssql-server --query 'SecretString' --output json | jq -r .host)
+          DB_CREDENTIALS_JSON=$(aws secretsmanager get-secret-value --secret-id mssql-server --query 'SecretString' --output json | jq -r '.')
+          export DB_USERNAME=$(echo $DB_CREDENTIALS_JSON | jq -r '.username')
+          export DB_PASSWORD=$(echo $DB_CREDENTIALS_JSON | jq -r '.password')
+          export DB_PORT=$(echo $DB_CREDENTIALS_JSON | jq -r '.port')
+          export DB_HOST=$(echo $DB_CREDENTIALS_JSON | jq -r '.host')
           echo "Secrets retrieved successfully."
 
       - name: Construct SQLCMD_URL
