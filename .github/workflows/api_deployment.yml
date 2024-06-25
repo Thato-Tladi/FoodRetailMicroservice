@@ -48,7 +48,7 @@ jobs:
           echo "::set-output name=BUCKET_NAME::$BUCKET_NAME"
 
       - name: Sync Build to S3 Bucket
-        run: aws s3 sync ./Frontend/build/ s3://$BUCKET_NAME --delete
+        run: aws s3 sync ./Frontend/build/ s3://$BUCKET_NAME/ --delete
 
       - name: Apply Static Website Configuration
         run: aws s3 website s3://$BUCKET_NAME --index-document index.html --error-document 404.html
