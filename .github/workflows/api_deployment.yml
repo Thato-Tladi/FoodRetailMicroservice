@@ -11,6 +11,7 @@ on:
 env:
   DOTNET_VERSION: '8.0.*'
   AWS_REGION: 'eu-west-1'
+  BUILD_ARTIFACT: "dotnet-app-${{ github.sha }}.zip"
   DEPLOY_PACKAGE_NAME: 'site.zip'
 
 jobs:
@@ -38,22 +39,24 @@ jobs:
         run: dotnet test --no-restore --verbosity normal
 
       - name: Publish
-        run: dotnet publish -c Release -o site
+        run: dotnet publish -c Release -o ${{ github.workspace }}/out
 
       - name: Prepare Deployment Package
         run: |
-          cd site
-          zip -r -X ../site.zip .
-          cd ..
-          # Ensure aws-windows-deployment-manifest.json is in the root directory
-          cp Api/aws-windows-deployment-manifest.json .
-          zip site.zip site.zip aws-windows-deployment-manifest.json
+          # Ensure aws-windows-deployment-manifest.json is in the output directory
+          Copy-Item -Path ${{ github.workspace }}/Api/aws-windows-deployment-manifest.json -Destination ${{ github.workspace }}/out/
+          cd ${{ github.workspace }}/out/
+          # Compress all files including the manifest into the final deployment package
+          Compress-Archive -Path * -DestinationPath ${{ github.workspace }}/${{ env.DEPLOY_PACKAGE_NAME }}
+          # Verify the contents of the deployment package
+          Expand-Archive -Path ${{ github.workspace }}/${{ env.DEPLOY_PACKAGE_NAME }} -DestinationPath ${{ github.workspace }}/verify/
+          Get-ChildItem -Path ${{ github.workspace }}/verify/
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
         with:
           name: Application_Artifact
-          path: site.zip
+          path: ${{ github.workspace }}/${{ env.DEPLOY_PACKAGE_NAME }}
 
   ServerDeployment:
     needs: build_and_create_Artifact
@@ -80,5 +83,5 @@ jobs:
           environment_name: foodretail-env
           version_label: ${{ github.run_number }}
           region: ${{ secrets.AWS_REGION }}
-          deployment_package: out/site.zip
+          deployment_package: out/${{ env.DEPLOY_PACKAGE_NAME }}
           existing_bucket_name: elasticbeanstalk-eu-west-1-924511948270
