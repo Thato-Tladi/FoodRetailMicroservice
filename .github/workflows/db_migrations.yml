@@ -41,7 +41,7 @@ jobs:
 
       - name: Construct SQLCMD_URL
         run: |
-          echo "SQLCMD_URL=Server=$DB_HOST,$DB_PORT;Integrated Security=false;" >> $GITHUB_ENV
+          echo "SQLCMD_URL=Server=$DB_HOST,$DB_PORT,trustServerCertificate=true;" >> $GITHUB_ENV
 
       - name: Create Database If Not Exists
         run: |
