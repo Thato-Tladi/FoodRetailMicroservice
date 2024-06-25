@@ -41,11 +41,11 @@ jobs:
 
       - name: Construct SQLCMD_URL
         run: |
-          echo "SQLCMD_URL=Server=$DB_HOST,$DB_PORT,trustServerCertificate=true;" >> $GITHUB_ENV
+          echo "SQLCMD_URL=Server=$DB_HOST,$DB_PORT;trustServerCertificate=true;" >> $GITHUB_ENV
 
       - name: Create Database If Not Exists
         run: |
-          sqlcmd -S ${{ env.SQLCMD_URL }} -U ${{ env.DB_USERNAME }} -P ${{ env.DB_PASSWORD }} -Q "IF DB_ID('FoodRetailMicroservice') IS NULL BEGIN CREATE DATABASE SpiderCards; END;"
+          sqlcmd -S "${{ env.SQLCMD_URL }}" -U "${{ env.DB_USERNAME }}" -P "${{ env.DB_PASSWORD }}" -Q "IF DB_ID('FoodRetailMicroservice') IS NULL BEGIN CREATE DATABASE FoodRetailMicroservice; END;"
 
   MigrateDatabase:
     needs: SetupDatabase
