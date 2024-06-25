@@ -1,52 +1,87 @@
 name: Deploy API to Beanstalk
+
 on:
   push:
     branches:
       - main
     paths:
       - 'Api/**'
-      - '.github/workflows/**'
   workflow_dispatch:
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+env:
+  DOTNET_VERSION: '8.0.*'
+  AWS_REGION: 'eu-west-1'
+  BUILD_ARTIFACT: "dotnet-app-${{ github.sha }}.zip"
+  DEPLOY_PACKAGE_NAME: 'site.zip'
 
+jobs:
+  build_and_create_Artifact:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: Api
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Setup .NET
+      - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '8.0'
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Build Release
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
+
+      - name: Publish
+        run: dotnet publish -c Release -o ${{ github.workspace }}/out
+
+      - name: Prepare Deployment Package
         run: |
-          cd Api
-          dotnet build --configuration Release
+          # Ensure aws-windows-deployment-manifest.json is in the output directory
+          Copy-Item -Path ${{ github.workspace }}/Api/aws-windows-deployment-manifest.json -Destination ${{ github.workspace }}/out/
+          cd ${{ github.workspace }}/out/
+          # Compress all files including the manifest into the final deployment package
+          Compress-Archive -Path * -DestinationPath ${{ github.workspace }}/${{ env.DEPLOY_PACKAGE_NAME }}
+          # Verify the contents of the deployment package
+          Expand-Archive -Path ${{ github.workspace }}/${{ env.DEPLOY_PACKAGE_NAME }} -DestinationPath ${{ github.workspace }}/verify/
+          Get-ChildItem -Path ${{ github.workspace }}/verify/
 
-      - name: Publish .NET API
-        run: |
-          cd Api
-          dotnet publish -c Release -o publish
-
-      - name: Install EB CLI
-        run: |
-          curl -sL https://s3.amazonaws.com/elasticbeanstalk-cli-resources/install-ebcli.sh | sudo bash
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.0
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          name: Application_Artifact
+          path: ${{ github.workspace }}/${{ env.DEPLOY_PACKAGE_NAME }}
 
-      - name: Deploy to Existing Environment
-        run: |
-          cd Api/publish
-          eb init foodretail-application --region ${{ secrets.AWS_REGION }} -p "dotnetcore-8.0"
-          eb deploy foodretail-env
-      - name: Cleanup
-        run: |
-          rm -rf Api/publish
+  ServerDeployment:
+    needs: build_and_create_Artifact
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: Api
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: Application_Artifact
+          path: out
+
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: foodretail-application
+          environment_name: food-retail-microservice-api-env
+          version_label: ${{ github.run_number }}
+          region: ${{ secrets.AWS_REGION }}
+          deployment_package: out/${{ env.DEPLOY_PACKAGE_NAME }}
+          existing_bucket_name: elasticbeanstalk-eu-west-1-924511948270

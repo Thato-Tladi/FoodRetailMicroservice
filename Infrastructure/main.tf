@@ -42,7 +42,7 @@ resource "aws_route_table_association" "route_table_asso" {
 resource "aws_route_table_association" "route_table_asso1" {
   subnet_id      = aws_subnet.subnet2.id
   route_table_id = aws_route_table.route_table.id
-} 
+}
 
 # Create a security group
 resource "aws_security_group" "database_sg" {
@@ -143,15 +143,14 @@ resource "aws_db_instance" "foodretail-rds" {
 #Application creation
 resource "aws_elastic_beanstalk_application" "foodretail-beanstalk-app" {
   name        = "foodretail-application"
-  description = "foodretail application built on NodeJs"
+  description = "foodretail application built on .Net8"
 }
 
-
-#Environment creation
-resource "aws_elastic_beanstalk_environment" "foodretail-elastic-beanstalk-env" {
-  name                = "foodretail-env"
+# Environment creation for .NET Core 8 on Amazon Linux 2
+resource "aws_elastic_beanstalk_environment" "test-elastic-beanstalk-env" {
+  name                = "food-retail-microservice-api-env"
   application         = aws_elastic_beanstalk_application.foodretail-beanstalk-app.name
-  solution_stack_name =  "64bit Windows Server 2022 v2.15.2 running IIS 10.0"
+  solution_stack_name = "64bit Amazon Linux 2023 v3.1.2 running .NET 8"
   cname_prefix        = "foodretail-app"
 
   setting {
@@ -207,8 +206,6 @@ resource "aws_elastic_beanstalk_environment" "foodretail-elastic-beanstalk-env" 
     name      = "MatcherHTTPCode"
     value     = "200"
   }
-
-  depends_on = [aws_security_group.foodretail-instance-sg, aws_security_group.database_sg]
 }
 
 #Setting up resources for S3 static wbesite
