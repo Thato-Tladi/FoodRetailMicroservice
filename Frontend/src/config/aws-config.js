@@ -1,18 +1,18 @@
 const oauthConfig = {
-  domain: process.env.REACT_APP_COGNITO_DOMAIN,
-  scopes: process.env.REACT_APP_COGNITO_SCOPES.split(","),
-  responseType: process.env.REACT_APP_COGNITO_RESPONSE_TYPE,
-  redirectSignIn: process.env.REACT_APP_COGNITO_REDIRECT_SIGNIN,
-  redirectSignOut: process.env.REACT_APP_COGNITO_REDIRECT_SIGNOUT,
+  domain: "food-retailer.auth.eu-west-1.amazoncognito.com",
+  scopes: ["email", "phone", "openid"],
+  responseType: "code",
+  redirectSignIn: ["http://localhost:3000/"],
+  redirectSignOut: ["http://localhost:3000"],
 };
 
 const awsConfig = {
   Auth: {
     Cognito: {
       mandatorySignIn: true,
-      region: process.env.REACT_APP_COGNITO_REGION,
-      userPoolId: process.env.REACT_APP_COGNITO_USER_POOL_ID,
-      userPoolClientId: process.env.REACT_APP_COGNITO_USER_POOL_CLIENT_ID,
+      region: "eu-west-1",
+      userPoolId: "eu-west-1_JhHnzjXba",
+      userPoolClientId: "1k3lj2hbvm593mdp1ib1ino0mj",
       loginWith: {
         oauth: oauthConfig,
       },
