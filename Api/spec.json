@@ -1,0 +1,34 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Food Purchase API",
+        "version": "1.0.0",
+        "description": "API for purchasing food for consumers."
+    },
+    "paths": {
+        "/Buy/{consumerId}": {
+            "get": {
+                "summary": "Makes a purchase of food for the consumer.",
+                "parameters": [
+                    {
+                        "name": "consumerId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "The ID of the consumer."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The purchase was successful."
+                    },
+                    "402": {
+                        "description": "The purchase was not successful due to insufficient funds."
+                    }
+                }
+            }
+        }
+    }
+}
