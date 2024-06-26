@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { getData1 } from "../api/api"; // Import your API functions
+import React from "react";
 
 const HomePage = () => {
   return (
