@@ -1,17 +1,20 @@
-import React from "react";
+import * as React from "react";
+import { BrowserRouter as Router } from "react-router-dom";
 import { Authenticator } from "@aws-amplify/ui-react";
 import { Amplify } from "aws-amplify";
-import awsConfig from "./config/aws-config.js";
+import awsConfig from "./config/aws-config";
 import "./App.css";
 import "@aws-amplify/ui-react/styles.css";
-import AppRoutes from "./routes";
+import PermanentDrawerLeft from "./components/PermanentDrawerLeft";
 
 Amplify.configure(awsConfig);
 
 function App() {
   return (
     <Authenticator className="App" hideSignUp socialProviders={["google"]}>
-      <AppRoutes />
+      <Router>
+        <PermanentDrawerLeft />
+      </Router>
     </Authenticator>
   );
 }
