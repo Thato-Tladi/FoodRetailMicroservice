@@ -6,7 +6,7 @@ import NotFoundPage from "./pages/NotfoundPage";
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/dashboard" element={<HomePage />} />
+      <Route path="/Consumer History" element={<HomePage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
