@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -45,4 +46,8 @@ html, body {
   to {
     transform: rotate(360deg);
   }
+}
+
+.App {
+  min-height: 100vh;
 }
