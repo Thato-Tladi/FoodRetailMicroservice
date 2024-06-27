@@ -5,7 +5,7 @@ import { Amplify } from "aws-amplify";
 import awsConfig from "./config/aws-config";
 import "./App.css";
 import "@aws-amplify/ui-react/styles.css";
-import PermanentDrawerLeft from "./components/PermanentDrawerLeft";
+import DrawerLeft from "./components/DrawerLeft";
 
 Amplify.configure(awsConfig);
 
@@ -13,7 +13,7 @@ function App() {
   return (
     <Authenticator className="App" hideSignUp socialProviders={["google"]}>
       <Router>
-        <PermanentDrawerLeft />
+        <DrawerLeft />
       </Router>
     </Authenticator>
   );
