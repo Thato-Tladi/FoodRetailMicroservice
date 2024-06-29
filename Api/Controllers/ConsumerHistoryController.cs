@@ -19,8 +19,7 @@ public class ConsumerHistoryController : ControllerBase
     /// Gets all purchases for all consumers
     /// </summary>
     /// <returns>JSON Array of all purchases made</returns>
-    /// <response code="200">Food has been purchased</response>
-    /// <response code="402">The consumer does not have enough funds</response>
+    /// <response code="200"></response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllConsumerHistory()
