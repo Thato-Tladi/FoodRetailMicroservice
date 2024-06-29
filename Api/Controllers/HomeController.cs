@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace FoodRetailer.Controllers;
+namespace Api.Controllers;
 
 [ApiController]
 [Route("/")]
