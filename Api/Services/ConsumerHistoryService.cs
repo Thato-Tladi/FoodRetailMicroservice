@@ -22,4 +22,9 @@ public class ConsumerHistoryService : IConsumerHistoryService
     {
         return await _consumerHistoryRepository.GetEveryConsumerHistory();
     }
+
+    public async Task DeleteEveryConsumerHistory()
+    {
+        await _consumerHistoryRepository.ClearConsumerHistory();
+    }
 }

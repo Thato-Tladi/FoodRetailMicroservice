@@ -26,4 +26,17 @@ public class ConsumerHistoryController : ControllerBase
     {
         return Ok(await _consumerHistoryService.GetEveryConsumerHistory());
     }
+
+    /// <summary>
+    /// Deletes all consumer history
+    /// </summary>
+    /// <returns></returns>
+    /// <response code="200"></response>
+    [HttpGet("clear")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteAllConsumerHistory()
+    {
+        await _consumerHistoryService.DeleteEveryConsumerHistory();
+        return Ok();
+    }
 }
