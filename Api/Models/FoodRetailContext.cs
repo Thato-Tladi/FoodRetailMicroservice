@@ -17,7 +17,7 @@ public partial class FoodRetailContext : DbContext
     public virtual DbSet<ConsumerHistory> ConsumerHistories { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Name=FoodRetailerConnectionString");
+        => optionsBuilder.UseSqlServer("Name=Database:ConnectionString");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
