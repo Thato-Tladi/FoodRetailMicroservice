@@ -21,6 +21,7 @@ if (!builder.Environment.IsDevelopment())
             options.KeyGenerator = (_, s) => s
                 .Replace($"{env}_{appName}.", string.Empty)
                 .Replace("__", ":");
+            options.PollingInterval = TimeSpan.FromHours(1);
         }
     );
 }
