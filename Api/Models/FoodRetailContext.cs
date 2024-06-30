@@ -47,13 +47,10 @@ public partial class FoodRetailContext : DbContext
 
             entity.Property(e => e.FinancialInfoId).HasColumnName("financial_info_id");
             entity.Property(e => e.PropertyName)
-                .HasMaxLength(1)
+                .HasMaxLength(128)
                 .IsUnicode(false)
                 .HasColumnName("property_name");
-            entity.Property(e => e.PropertyValue)
-                .HasMaxLength(1)
-                .IsUnicode(false)
-                .HasColumnName("property_value");
+            entity.Property(e => e.PropertyValue).HasColumnName("property_value");
         });
 
         OnModelCreatingPartial(modelBuilder);

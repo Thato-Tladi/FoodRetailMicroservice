@@ -34,7 +34,11 @@ builder.Services.AddDbContext<FoodRetailContext>();
 
 builder.Services.AddScoped<IConsumerHistoryRepository, ConsumerHistoryRepository>();
 
+builder.Services.AddScoped<IFinancialInfoRepository, FinancialInfoRepository>();
+
 builder.Services.AddScoped<IConsumerHistoryService, ConsumerHistoryService>();
+
+builder.Services.AddScoped<IFinancialInfoService, FinancialInfoService>();
 
 builder.Services.AddSwaggerGen(config =>
 {
