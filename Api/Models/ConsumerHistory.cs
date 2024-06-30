@@ -1,4 +1,7 @@
-﻿namespace Api.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Api.Models;
 
 public partial class ConsumerHistory
 {
@@ -8,5 +11,5 @@ public partial class ConsumerHistory
 
     public DateTime? PurchasedDate { get; set; }
 
-    public double Price { get; set; }
+    public long Price { get; set; }
 }

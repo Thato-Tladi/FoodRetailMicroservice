@@ -30,11 +30,7 @@ public class BuyController : ControllerBase
             return BadRequest("Invalid consumerId");
         }
 
-        ConsumerHistory consumerHistory = await _consumerHistoryService.AddConsumerHistory(new()
-        {
-            ConsumerId = (int)consumerId,
-            PurchasedDate = DateTime.Now
-        });
+        ConsumerHistory consumerHistory = await _consumerHistoryService.AddConsumerHistory(consumerId);
 
         return Ok(consumerHistory);
     }
