@@ -15,8 +15,9 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
+import CircularProgress from '@mui/material/CircularProgress';
 
-export default function BasicTable({ columns, rows }) {
+export default function BasicTable({ columns, rows, loading }) {
   const [sortConfig, setSortConfig] = useState({ key: '', direction: 'asc' });
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -85,36 +86,42 @@ export default function BasicTable({ columns, rows }) {
         />
       </div>
       <Box sx={{ width: '100%', overflowX: 'auto' }}>
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 200 }}>
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableCell key={column.id} align="center" sx={{ fontWeight: 'bold' }}>
-                    {column.label}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {sortedRows.map((row, rowIndex) => (
-                <TableRow
-                  key={rowIndex}
-                  sx={{
-                    '&:last-child td, &:last-child th': { border: 0 },
-                    backgroundColor: rowIndex % 2 === 0 ? 'lightgray' : 'white',
-                  }}
-                >
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 200 }}>
+              <TableHead>
+                <TableRow>
                   {columns.map((column) => (
-                    <TableCell key={column.id} align="center">
-                      {row[column.id]}
+                    <TableCell key={column.id} align="center" sx={{ fontWeight: 'bold' }}>
+                      {column.label}
                     </TableCell>
                   ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {sortedRows.map((row, rowIndex) => (
+                  <TableRow
+                    key={rowIndex}
+                    sx={{
+                      '&:last-child td, &:last-child th': { border: 0 },
+                      backgroundColor: rowIndex % 2 === 0 ? 'lightgray' : 'white',
+                    }}
+                  >
+                    {columns.map((column) => (
+                      <TableCell key={column.id} align="center">
+                        {row[column.id]}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </Box>
     </div>
   );

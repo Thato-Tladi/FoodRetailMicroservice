@@ -1,10 +1,11 @@
 import axios from "axios";
 import { getToken } from "./auth";
 
-//dummy baseurl replace with real
 const api = axios.create({
-  baseURL: "https://api.themoviedb.org/3/movie/movie_id?language=en-US",
+  baseURL: "https://api.sustenance.projects.bbdgrad.com/api",
   headers: {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
     "Content-Type": "application/json",
   },
 });
@@ -26,11 +27,9 @@ api.interceptors.request.use(
   }
 );
 
-//dummy example api call replace endpath
-export const getData1 = async () => {
+export const getConsumerHistory = async () => {
   try {
-    const response = await api.get("/data1");
-
+    const response = await api.get("/ConsumerHistory");
     return response.data;
   } catch (error) {
     throw error;
