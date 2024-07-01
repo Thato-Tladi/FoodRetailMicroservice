@@ -54,7 +54,9 @@ function DrawerLeft() {
           >
             <MenuIcon />
           </IconButton>
-          <Box sx={{ marginLeft: "8px",display: "flex", alignItems: "center" }}>
+          <Box
+            sx={{ marginLeft: "8px", display: "flex", alignItems: "center" }}
+          >
             <img
               src={LogoImage}
               alt="Logo"
@@ -84,7 +86,7 @@ function DrawerLeft() {
             <ListItem key={text} disablePadding>
               <ListItemButton
                 component={Link}
-                to={`/${text.toLowerCase()}`}
+                to={`/${text === "Consumer History" ? "" : text.toLowerCase()}`}
                 onClick={handleItemClick}
               >
                 <ListItemIcon>
@@ -113,7 +115,10 @@ function DrawerLeft() {
           ))}
         </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}>
+      <Box
+        component="main"
+        sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
+      >
         <Toolbar />
         <AppRoutes />
       </Box>
