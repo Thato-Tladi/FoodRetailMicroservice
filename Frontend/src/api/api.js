@@ -4,8 +4,6 @@ import { getToken } from "./auth";
 const api = axios.create({
   baseURL: "https://api.sustenance.projects.bbdgrad.com/api",
   headers: {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
     "Content-Type": "application/json",
   },
 });
@@ -29,7 +27,9 @@ api.interceptors.request.use(
 
 export const getConsumerHistory = async () => {
   try {
-    const response = await api.get("/ConsumerHistory");
+    const response = await axios.get(
+      "https://api.sustenance.projects.bbdgrad.com/api/ConsumerHistory"
+    );
     return response.data;
   } catch (error) {
     throw error;
