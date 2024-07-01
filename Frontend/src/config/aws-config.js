@@ -3,7 +3,7 @@ const oauthConfig = {
   scopes: ["email", "phone", "openid"],
   responseType: "code",
   redirectSignIn: ["https://master.d1lz8960oywmlc.amplifyapp.com"],
-  redirectSignOut: ["http://localhost:3000"],
+  redirectSignOut: ["https://master.d1lz8960oywmlc.amplifyapp.com"],
 };
 
 const awsConfig = {
