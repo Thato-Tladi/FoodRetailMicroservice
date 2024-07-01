@@ -2,7 +2,7 @@ const oauthConfig = {
   domain: "food-retailer.auth.eu-west-1.amazoncognito.com",
   scopes: ["email", "phone", "openid"],
   responseType: "code",
-  redirectSignIn: ["http://localhost:3000/"],
+  redirectSignIn: ["https://master.d1lz8960oywmlc.amplifyapp.com"],
   redirectSignOut: ["http://localhost:3000"],
 };
 
