@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Box, Typography } from "@mui/material";
 import axios from "axios";
-import BasicLineChart from "../components/LineChart";
 import BasicPieChart from "../components/PieChart";
 import BasicBarChart from "../components/BarChart";
 
@@ -51,11 +50,6 @@ const StatsPage = () => {
     y: Object.values(averagePricePerConsumer).map(
       (val) => val.total / val.count
     ),
-  };
-
-  const priceTrendData = {
-    x: consumerHistory.map((history) => new Date(history.purchasedDate)),
-    y: consumerHistory.map((history) => history.price),
   };
 
   const purchaseDistributionData = consumerHistory.reduce((acc, cur) => {
