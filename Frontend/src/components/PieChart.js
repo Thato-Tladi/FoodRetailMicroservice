@@ -18,7 +18,7 @@ const BasicPieChart = ({ data }) => {
               data: data,
             },
           ]}
-          width={600}
+          width={800}
           height={200}
         />
       </Grid>

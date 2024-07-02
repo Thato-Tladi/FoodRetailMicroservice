@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -19,13 +19,41 @@ import TableChartIcon from "@mui/icons-material/TableChart";
 import { Link } from "react-router-dom";
 import AppRoutes from "../routes";
 
+import { getFinancialInfo } from '../api/api';
 import LogoImage from "../assets/food_retailer_logo.png";
+import '../css/appBarStyles.css';
 
 const drawerWidth = 240;
 
 function DrawerLeft() {
   const [open, setOpen] = useState(false);
+  const [marqueeText, setMarqueeText] = useState("Loading...");
 
+  useEffect(() => {
+    const fetchFinancialInfo = async () => {
+      try {
+        const data = await getFinancialInfo();
+        const formattedData = data.map((item) => ({
+          name: item.propertyName.replace(/_/g, ' '),
+          value: item.propertyValue,
+        }));
+  
+        const marqueeTextContent = formattedData.map((item) => (
+          <span key={item.name}>
+            <span style={{ color: 'white' }}>{item.name}</span> : <span style={{ color: 'green' }}>{item.value}</span> | {' '}
+          </span>
+        ));
+  
+        setMarqueeText(marqueeTextContent);
+      } catch (error) {
+        console.error('Error fetching financial info:', error);
+        setMarqueeText("Error loading data");
+      }
+    };
+  
+    fetchFinancialInfo();
+  }, []);
+  
   const handleDrawerToggle = () => {
     setOpen(!open);
   };
@@ -54,9 +82,7 @@ function DrawerLeft() {
           >
             <MenuIcon />
           </IconButton>
-          <Box
-            sx={{ marginLeft: "8px", display: "flex", alignItems: "center" }}
-          >
+          <Box className="logo-title-container">
             <img
               src={LogoImage}
               alt="Logo"
@@ -64,6 +90,11 @@ function DrawerLeft() {
             />
             <Typography variant="h6" noWrap component="div">
               Food Retailer Dashboard
+            </Typography>
+          </Box>
+          <Box className="marquee-container">
+            <Typography variant="h6" component="span" className="marquee">
+              {marqueeText}
             </Typography>
           </Box>
         </Toolbar>

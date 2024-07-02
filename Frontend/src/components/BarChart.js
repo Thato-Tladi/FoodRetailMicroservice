@@ -1,16 +1,39 @@
-import * as React from "react";
-import { BarChart } from "@mui/x-charts/BarChart";
+import React from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Label,
+} from "recharts";
 
-const BasicBarChart = ({ data }) => {
+const BasicBarChart = ({ data, xAxisLabel, yAxisLabel, chartTitle }) => {
   return (
-    <BarChart
-      title="Average Price per Consumer"
-      xAxis={[{ scaleType: "band", data: data.x, title: "Consumer ID" }]}
-      yAxis={[{ title: "Average Price" }]}
-      series={[{ data: data.y, label: "Average Price" }]}
-      width={500}
-      height={300}
-    />
+    <ResponsiveContainer width="100%" height={300}>
+      <BarChart
+        data={data.x.map((value, index) => ({
+          name: value,
+          averagePrice: data.y[index],
+        }))}
+        margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+      >
+        <XAxis dataKey="name">
+          <Label value={xAxisLabel} offset={0} position="insideBottom" />
+        </XAxis>
+        <YAxis>
+          <Label
+            value={yAxisLabel}
+            angle={-90}
+            position="insideLeft"
+            style={{ textAnchor: "middle" }}
+          />
+        </YAxis>
+        <Tooltip />
+        <Bar dataKey="averagePrice" fill="#001F3F" />
+      </BarChart>
+    </ResponsiveContainer>
   );
 };
 

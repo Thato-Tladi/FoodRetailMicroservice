@@ -36,4 +36,14 @@ export const getConsumerHistory = async () => {
   }
 };
 
+export const getFinancialInfo = async () => {
+  try {
+    const response = await axios.get(
+      "https://api.sustenance.projects.bbdgrad.com/api/FinancialInfo"
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 export default api;
