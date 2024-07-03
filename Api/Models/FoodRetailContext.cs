@@ -33,10 +33,7 @@ public partial class FoodRetailContext : DbContext
             entity.Property(e => e.ConsumerHistoryId).HasColumnName("consumer_history_id");
             entity.Property(e => e.ConsumerId).HasColumnName("consumer_id");
             entity.Property(e => e.Price).HasColumnName("price");
-            entity.Property(e => e.PurchasedDate)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime")
-                .HasColumnName("purchased_date");
+            entity.Property(e => e.PurchasedDate).HasColumnName("purchased_date");
         });
 
         modelBuilder.Entity<FinancialInfo>(entity =>
