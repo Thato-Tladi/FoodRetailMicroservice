@@ -37,23 +37,23 @@ function DrawerLeft() {
           name: item.propertyName.replace(/_/g, ' '),
           value: item.propertyValue,
         }));
-  
+
         const marqueeTextContent = formattedData.map((item) => (
           <span key={item.name}>
             <span style={{ color: 'white' }}>{item.name}</span> : <span style={{ color: 'green' }}>{item.value}</span> | {' '}
           </span>
         ));
-  
+
         setMarqueeText(marqueeTextContent);
       } catch (error) {
         console.error('Error fetching financial info:', error);
         setMarqueeText("Error loading data");
       }
     };
-  
+
     fetchFinancialInfo();
   }, []);
-  
+
   const handleDrawerToggle = () => {
     setOpen(!open);
   };
@@ -86,9 +86,14 @@ function DrawerLeft() {
             <img
               src={LogoImage}
               alt="Logo"
-              style={{ width: "40px", height: "auto", marginRight: "8px" }}
+              style={{ width: "40px", height: "auto", paddingRight: "8px" }}
             />
-            <Typography variant="h6" noWrap component="div">
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ marginRight: '32px' }}
+            >
               Food Retailer Dashboard
             </Typography>
           </Box>
