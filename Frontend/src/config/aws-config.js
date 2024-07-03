@@ -6,9 +6,12 @@ const oauthConfig = {
     "https://sustenance.projects.bbdgrad.com/",
     "http://localhost:3000/",
   ],
-  redirectSignOut: ["https://sustenance.projects.bbdgrad.com/"],
+  redirectSignOut: [
+    "https://sustenance.projects.bbdgrad.com/",
+    "http://localhost:3000/",
+  ],
 };
- 
+
 const awsConfig = {
   Auth: {
     Cognito: {
@@ -22,5 +25,5 @@ const awsConfig = {
     },
   },
 };
- 
+
 export default awsConfig;
