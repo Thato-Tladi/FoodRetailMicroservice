@@ -37,25 +37,27 @@ function DrawerLeft() {
     const fetchFinancialInfo = async () => {
       try {
         const data = await getFinancialInfo();
-        const formattedData = data.map((item) => ({
-          name: item.propertyName.replace(/_/g, " "),
-          value: item.propertyValue,
-        }));
-
+        const formattedData = data.map((item) => {
+          const name = item.propertyName.replace(/_/g, " ");
+          const value = (name.toLowerCase() === "vat" || name.toLowerCase() === "mark up") 
+            ? `${item.propertyValue}%` 
+            : item.propertyValue;
+          return { name, value };
+        });
+  
         const marqueeTextContent = formattedData.map((item) => (
           <span key={item.name}>
             <span style={{ color: "white" }}>{item.name}</span> :{" "}
             <span style={{ color: "green" }}>{item.value}</span> |{" "}
           </span>
         ));
-
+  
         setMarqueeText(marqueeTextContent);
       } catch (error) {
-        console.error("Error fetching financial info:", error);
-        setMarqueeText("Error loading data");
+        setMarqueeText("Welcome");
       }
     };
-
+  
     fetchFinancialInfo();
   }, []);
 

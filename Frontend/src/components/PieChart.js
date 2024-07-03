@@ -44,7 +44,7 @@ class BasicPieChart extends PureComponent {
             Top Consumers
           </Typography>
         </Grid>
-        <Grid item style={{ width: "100%", height: 500 }}>
+        <Grid item style={{ width: "100%", height: 350 }}>
           <ResponsiveContainer>
             <PieChart>
               <Pie
