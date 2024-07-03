@@ -9,7 +9,7 @@ public partial class ConsumerHistory
 
     public long ConsumerId { get; set; }
 
-    public DateTime? PurchasedDate { get; set; }
+    public string? PurchasedDate { get; set; }
 
     public long Price { get; set; }
 }
