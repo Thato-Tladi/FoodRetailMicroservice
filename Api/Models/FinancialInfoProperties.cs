@@ -5,5 +5,6 @@ public enum FinancialInfoProperties
     VAT,
     FOOD_PRICE,
     PROFIT,
-    MARK_UP
+    MARK_UP,
+    TRADING_ID
 }
