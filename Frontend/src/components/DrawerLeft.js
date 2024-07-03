@@ -18,14 +18,14 @@ import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import TableChartIcon from "@mui/icons-material/TableChart";
 import { Link } from "react-router-dom";
 import AppRoutes from "../routes";
+import "../css/appBarStyles.css";
 
 import { getFinancialInfo } from "../api/api";
 import LogoImage from "../assets/food_retailer_logo.png";
-import { fetchAuthSession, signOut } from "@aws-amplify/auth";
+import { signOut } from "@aws-amplify/auth";
 
 const drawerWidth = 240;
-const signOut1 = () => {
-  console.log("inside here");
+const signOutCall = () => {
   signOut();
 };
 
@@ -145,7 +145,7 @@ function DrawerLeft() {
               <ListItemButton
                 component={Link}
                 to={`/${text.toLowerCase()}`}
-                onClick={signOut1}
+                onClick={signOutCall}
               >
                 <ListItemIcon>
                   <LogoutIcon />
