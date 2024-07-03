@@ -5,10 +5,12 @@ using Newtonsoft.Json;
 public class StockExchangeService
 {
     private readonly HttpClient _client;
+    private readonly IConfiguration _config;
 
-    public StockExchangeService(HttpClient client)
+    public StockExchangeService(HttpClient client, IConfiguration config)
     {
         _client = client;
+        _config = config;
     }
 
     public async void RegisterBusiness()
@@ -21,7 +23,8 @@ public class StockExchangeService
             }),
             Encoding.UTF8, "application/json");
 
-        using HttpResponseMessage response = await _client.PostAsync("businesses", jsonContent);
+        string callbackUrl = _config["AppSettings:Url"] + "/trading";
+        using HttpResponseMessage response = await _client.PostAsync($"businesses?callbackUrl=", jsonContent);
         response.EnsureSuccessStatusCode();
         var jsonResponse = await response.Content.ReadAsStringAsync();
 

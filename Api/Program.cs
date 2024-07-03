@@ -41,6 +41,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<FoodRetailContext>();
 
+builder.Services.AddScoped<IBusinessIdentifierRepository, BusinessIdentifierRepository>();
+
 builder.Services.AddScoped<IConsumerHistoryRepository, ConsumerHistoryRepository>();
 
 builder.Services.AddScoped<IFinancialInfoRepository, FinancialInfoRepository>();
@@ -48,6 +50,8 @@ builder.Services.AddScoped<IFinancialInfoRepository, FinancialInfoRepository>();
 builder.Services.AddScoped<IConsumerHistoryService, ConsumerHistoryService>();
 
 builder.Services.AddScoped<IFinancialInfoService, FinancialInfoService>();
+
+builder.Services.AddScoped<IBusinessIdentifierService, BusinessIdentifierService>();
 
 builder.Services.AddSwaggerGen(config =>
 {
