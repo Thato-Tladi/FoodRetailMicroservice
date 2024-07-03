@@ -4,29 +4,12 @@ import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/ConsumerHistoryPage";
 import NotFoundPage from "./pages/NotfoundPage";
 import StatsPage from "./pages/StatsPage";
-import WaitingForAccessPage from "./pages/WaitingForAccessPage";
-import ProtectedRoute from "./components/protectedRoute";
 
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <HomePage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/stats"
-        element={
-          <ProtectedRoute>
-            <StatsPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route path="/waiting-for-access" element={<WaitingForAccessPage />} />
+      <Route path="/" element={<HomePage />} />
+      <Route path="/stats" element={<StatsPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
