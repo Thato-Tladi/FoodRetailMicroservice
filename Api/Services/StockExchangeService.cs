@@ -24,7 +24,7 @@ public class StockExchangeService
             Encoding.UTF8, "application/json");
 
         string callbackUrl = _config["AppSettings:Url"] + "/trading";
-        using HttpResponseMessage response = await _client.PostAsync($"businesses?callbackUrl=", jsonContent);
+        using HttpResponseMessage response = await _client.PostAsync($"businesses?callbackUrl='{callbackUrl}'", jsonContent);
         response.EnsureSuccessStatusCode();
         var jsonResponse = await response.Content.ReadAsStringAsync();
 
