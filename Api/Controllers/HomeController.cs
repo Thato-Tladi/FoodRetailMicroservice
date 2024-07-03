@@ -25,17 +25,11 @@ public class HomeController : ControllerBase
     }
 
     [HttpGet("start")]
-    public ActionResult<string> Start()
-    {
-        _stockExchangeService.RegisterBusiness();
-        return Ok("Starting");
-    }
-
-    [HttpGet("reset")]
-    public async Task<ActionResult<string>> Reset()
+    public async Task<ActionResult<string>> Start()
     {
         await _consumerHistoryService.DeleteEveryConsumerHistory();
         await _financialInfoService.ResetFinancialRecords();
-        return Ok("Reset");
+        _stockExchangeService.RegisterBusiness();
+        return Ok("Starting");
     }
 }
