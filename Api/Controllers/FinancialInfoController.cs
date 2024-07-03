@@ -1,4 +1,5 @@
 using Api.Repository.Interfaces;
+using Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -7,11 +8,11 @@ namespace Api.Controllers;
 [Route("api/[controller]")]
 public class FinancialInfoController : ControllerBase
 {
-    private readonly IFinancialInfoRepository _financialInfoRepository;
+    private readonly IFinancialInfoService _financialInfoService;
 
-    public FinancialInfoController(IFinancialInfoRepository financialInfoRepository)
+    public FinancialInfoController(IFinancialInfoService financialInfoService)
     {
-        _financialInfoRepository = financialInfoRepository;
+        _financialInfoService = financialInfoService;
     }
 
     /// <summary>
@@ -23,6 +24,6 @@ public class FinancialInfoController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllFinancialInfo()
     {
-        return Ok(await _financialInfoRepository.GetAllFinancialInfo());
+        return Ok(await _financialInfoService.GetFinancialInfo());
     }
 }

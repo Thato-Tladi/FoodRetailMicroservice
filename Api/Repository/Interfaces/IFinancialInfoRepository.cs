@@ -6,6 +6,8 @@ public interface IFinancialInfoRepository
 {
     long GetPropertyValue(FinancialInfoProperties property);
 
+    void SetPropertyValue(FinancialInfoProperties property, long propertyValue);
+
     Task SetProfitValue(long profit);
 
     Task AddToProfit(long profit);

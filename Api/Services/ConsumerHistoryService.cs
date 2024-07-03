@@ -26,7 +26,7 @@ public class ConsumerHistoryService : IConsumerHistoryService
         ConsumerHistory consumerHistory = new()
         {
             ConsumerId = (int)consumerId,
-            PurchasedDate = DateTime.Now,
+            PurchasedDate = DateTime.Now.ToString(),
             Price = foodSellingPrice
         };
 

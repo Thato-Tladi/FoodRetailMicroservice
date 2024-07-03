@@ -13,6 +13,12 @@ public class FinancialInfoService : IFinancialInfoService
         _financialInfoRepository = financialInfoRepository;
     }
 
+    public async Task<ICollection<FinancialInfo>> ResetFinancialRecords()
+    {
+        await _financialInfoRepository.SetProfitValue(0);
+        return await _financialInfoRepository.GetAllFinancialInfo();
+    }
+
     public async Task<ICollection<FinancialInfo>> GetFinancialInfo()
     {
         return await _financialInfoRepository.GetAllFinancialInfo();

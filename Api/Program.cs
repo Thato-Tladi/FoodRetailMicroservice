@@ -72,6 +72,12 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddHttpClient<StockExchangeService>((serviceProvider, client) =>
+{
+    client.DefaultRequestHeaders.Add("X-Origin", BusinessConstants.BUSINESS_NAME);
+    client.BaseAddress = new Uri("https://api.mese.projects.bbdgrad.com");
+});
+
 var app = builder.Build();
 
 app.UseCors(originsKey);
