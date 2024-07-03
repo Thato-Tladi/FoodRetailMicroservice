@@ -26,6 +26,15 @@ if (!builder.Environment.IsDevelopment())
     );
 }
 
+string? allAllowedOrigins = builder.Configuration["AppSettings:AllowedOrigins"];
+
+string[] allowedOrigins = [];
+
+if (allAllowedOrigins != null)
+{
+    allowedOrigins = allAllowedOrigins.Split(",");
+}
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -50,7 +59,22 @@ builder.Services.AddSwaggerGen(config =>
     config.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 
+string originsKey = "origins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: originsKey,
+        policy =>
+        {
+            policy.WithOrigins(allowedOrigins)
+                .WithMethods("GET")
+                .AllowAnyHeader();
+        });
+});
+
 var app = builder.Build();
+
+app.UseCors(originsKey);
 
 app.UseSwagger();
 
