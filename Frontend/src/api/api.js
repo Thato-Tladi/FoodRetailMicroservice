@@ -25,12 +25,21 @@ api.interceptors.request.use(
   }
 );
 
+const parseDate = (dateString) => {
+  const [day, month, year] = dateString.split("|").map(Number);
+  return new Date(`20${year}`, month - 1, day);
+};
+
 export const getConsumerHistory = async () => {
   try {
     const response = await axios.get(
       "https://api.sustenance.projects.bbdgrad.com/api/ConsumerHistory"
     );
-    return response.data;
+    const data = response.data.map((item) => ({
+      ...item,
+      purchasedDate: parseDate(item.purchasedDate),
+    }));
+    return data;
   } catch (error) {
     throw error;
   }
