@@ -258,7 +258,7 @@ const rows = [
 
 const HomePage = () => {
   return (
-    <div style={{ height: "80vh", overflowY: "auto" }}>
+    <div>
       <h1>Consumer History</h1>
       <BasicTable columns={columns} rows={rows} />
     </div>
