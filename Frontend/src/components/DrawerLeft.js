@@ -37,27 +37,34 @@ function DrawerLeft() {
     const fetchFinancialInfo = async () => {
       try {
         const data = await getFinancialInfo();
-        const formattedData = data.map((item) => {
-          const name = item.propertyName.replace(/_/g, " ");
-          const value = (name.toLowerCase() === "vat" || name.toLowerCase() === "mark up") 
-            ? `${item.propertyValue}%` 
-            : item.propertyValue;
-          return { name, value };
-        });
-  
+        const formattedData = data
+          .filter((item) => item.propertyName.toLowerCase() !== "trading_id")
+          .map((item) => {
+            const name = item.propertyName.replace(/_/g, " ");
+            const value =
+              name.toLowerCase() === "vat" || name.toLowerCase() === "mark up"
+                ? `${item.propertyValue}%`
+                : name.toLowerCase() === "food price" ||
+                  name.toLowerCase() === "profit"
+                ? ` ${item.propertyValue}Ⓜ️`
+                : item.propertyValue;
+
+            return { name, value };
+          });
+
         const marqueeTextContent = formattedData.map((item) => (
           <span key={item.name}>
             <span style={{ color: "white" }}>{item.name}</span> :{" "}
             <span style={{ color: "green" }}>{item.value}</span> |{" "}
           </span>
         ));
-  
+
         setMarqueeText(marqueeTextContent);
       } catch (error) {
         setMarqueeText("Welcome");
       }
     };
-  
+
     fetchFinancialInfo();
   }, []);
 
