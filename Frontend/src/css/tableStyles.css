@@ -1,61 +1,61 @@
 .container {
-    margin-bottom: 16px;
-    margin-top: 16px;
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  
-  .formControl {
-    min-width: 180px;
-    margin-right: 8px;
-    border-color: #001F3F;
-  }
-  
-  .select .MuiOutlinedInput-notchedOutline {
-    border-color: #001F3F;
-  }
-  
-  .iconButton {
-    color: #2C3A92;
-    margin-left: -12px;
-  }
-  
-  .textField {
-    margin-left: 16px;
-    min-width: 300px;
-    flex-grow: 1;
-    border-color: #001F3F;
-  }
-  
-  .textField .MuiOutlinedInput-notchedOutline {
-    border-color: #001F3F;
-  }
-  
-  .textField:hover .MuiOutlinedInput-notchedOutline {
-    border-color: #001F3F;
-  }
-  
-  .tableContainer {
-    min-width: 200px;
-  }
-  
-  .tableCell {
-    font-weight: bold;
-  }
-  
-  .tableRow:nth-child(even) {
-    background-color: lightgray;
-  }
-  
-  .tableRow:nth-child(odd) {
-    background-color: white;
-  }
-  
-  .loadingBox {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 50vh;
-  }
-  
+  margin-bottom: 16px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.formControl {
+  min-width: 150px !important;
+  margin-right: 8px;
+  border-color: #001f3f;
+}
+
+.select .MuiOutlinedInput-notchedOutline {
+  border-color: #001f3f;
+}
+
+.iconButton {
+  color: #2c3a92;
+  margin-left: -12px;
+}
+
+.textField {
+  margin-left: 16px;
+  min-width: 300px;
+  flex-grow: 1;
+  border-color: #001f3f;
+}
+
+.textField .MuiOutlinedInput-notchedOutline {
+  border-color: #001f3f;
+}
+
+.textField:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #001f3f;
+}
+
+.tableContainer {
+  min-width: 200px;
+}
+
+.tableCell {
+  font-weight: bold;
+}
+
+.tableRow:nth-child(even) {
+  background-color: lightgray;
+}
+
+.tableRow:nth-child(odd) {
+  background-color: white;
+}
+
+.loadingBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+}
