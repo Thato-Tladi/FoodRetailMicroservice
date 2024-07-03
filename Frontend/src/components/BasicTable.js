@@ -16,6 +16,12 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress';
+import '../css/tableStyles.css';
+
+function parseDate(dateString) {
+  const [day, month, year] = dateString.split('/');
+  return new Date(`${year}-${month}-${day}`);
+}
 
 export default function BasicTable({ columns, rows, loading }) {
   const [sortConfig, setSortConfig] = useState({ key: '', direction: 'asc' });
@@ -32,13 +38,26 @@ export default function BasicTable({ columns, rows, loading }) {
   const sortedRows = React.useMemo(() => {
     if (sortConfig.key) {
       return [...filteredRows].sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === 'asc' ? -1 : 1;
+        if (sortConfig.key === 'PurchasedDate') {
+          const dateA = parseDate(a[sortConfig.key]);
+          const dateB = parseDate(b[sortConfig.key]);
+  
+          if (dateA < dateB) {
+            return sortConfig.direction === 'asc' ? -1 : 1;
+          }
+          if (dateA > dateB) {
+            return sortConfig.direction === 'asc' ? 1 : -1;
+          }
+          return 0;
+        } else {
+          if (a[sortConfig.key] < b[sortConfig.key]) {
+            return sortConfig.direction === 'asc' ? -1 : 1;
+          }
+          if (a[sortConfig.key] > b[sortConfig.key]) {
+            return sortConfig.direction === 'asc' ? 1 : -1;
+          }
+          return 0;
         }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === 'asc' ? 1 : -1;
-        }
-        return 0;
       });
     }
     return filteredRows;
@@ -53,14 +72,14 @@ export default function BasicTable({ columns, rows, loading }) {
 
   return (
     <div>
-      <div style={{ marginBottom: '16px', marginTop: '16px', display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-        <FormControl variant="outlined" style={{ minWidth: 180, marginRight: '8px', borderColor: '#001F3F', }}>
+      <div className="container">
+        <FormControl variant="outlined" className="formControl">
           <InputLabel>Sort by</InputLabel>
           <Select
             value={sortConfig.key}
             onChange={(e) => handleSortChange(e.target.value)}
             label="Sort by"
-            sx={{ '& .MuiOutlinedInput-notchedOutline': { borderColor: '#001F3F' } }}
+            className="select"
           >
             {columns.map((column) => (
               <MenuItem key={column.id} value={column.id}>
@@ -70,8 +89,20 @@ export default function BasicTable({ columns, rows, loading }) {
           </Select>
         </FormControl>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <IconButton onClick={() => setSortConfig((prevState) => ({ ...prevState, direction: prevState.direction === 'asc' ? 'desc' : 'asc' }))}>
-            {sortConfig.direction === 'asc' ? <ArrowUpwardIcon sx={{ color: '#2C3A92', marginLeft: '-12px' }} /> : <ArrowDownwardIcon sx={{ color: '#2C3A92', marginLeft: '-12px' }} />}
+          <IconButton
+            onClick={() =>
+              setSortConfig((prevState) => ({
+                ...prevState,
+                direction: prevState.direction === 'asc' ? 'desc' : 'asc',
+              }))
+            }
+            style={{ marginLeft: '8px' }} // Add padding to the left of the IconButton
+          >
+            {sortConfig.direction === 'asc' ? (
+              <ArrowUpwardIcon className="iconButton" />
+            ) : (
+              <ArrowDownwardIcon className="iconButton" />
+            )}
           </IconButton>
         </Box>
         <TextField
@@ -79,24 +110,21 @@ export default function BasicTable({ columns, rows, loading }) {
           variant="outlined"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ marginLeft: '16px', minWidth: '300px', flexGrow: 1, borderColor: '#001F3F' }}
-          InputProps={{
-            sx: { '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#001F3F' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: '#001F3F' } }
-          }}
+          className="textField"
         />
       </div>
       <Box sx={{ width: '100%', overflowX: 'auto' }}>
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+          <Box className="loadingBox">
             <CircularProgress />
           </Box>
         ) : (
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 200 }}>
+          <TableContainer component={Paper} className="tableContainer">
+            <Table>
               <TableHead>
                 <TableRow>
                   {columns.map((column) => (
-                    <TableCell key={column.id} align="center" sx={{ fontWeight: 'bold' }}>
+                    <TableCell key={column.id} align="center" className="tableCell">
                       {column.label}
                     </TableCell>
                   ))}
@@ -104,13 +132,7 @@ export default function BasicTable({ columns, rows, loading }) {
               </TableHead>
               <TableBody>
                 {sortedRows.map((row, rowIndex) => (
-                  <TableRow
-                    key={rowIndex}
-                    sx={{
-                      '&:last-child td, &:last-child th': { border: 0 },
-                      backgroundColor: rowIndex % 2 === 0 ? 'lightgray' : 'white',
-                    }}
-                  >
+                  <TableRow key={rowIndex} className="tableRow">
                     {columns.map((column) => (
                       <TableCell key={column.id} align="center">
                         {row[column.id]}

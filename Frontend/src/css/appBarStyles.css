@@ -1,0 +1,26 @@
+@keyframes marquee {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+  
+  .marquee-container {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+    width: calc(100% - 260px);
+  }
+  
+  .marquee {
+    display: inline-block;
+    animation: marquee 20s linear infinite;
+    white-space: nowrap;
+  }
+  
+  .logo-title-container {
+    display: flex;
+    align-items: center;
+    flex-grow: 0;
+    margin-right: 8px;
+  }
+  

@@ -1,24 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Box, Typography } from "@mui/material";
-import axios from "axios";
+import { Box, Typography, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
 import BasicPieChart from "../components/PieChart";
 import BasicBarChart from "../components/BarChart";
-
-// API call function
-const getConsumerHistory = async () => {
-  try {
-    const response = await axios.get(
-      "https://api.sustenance.projects.bbdgrad.com/api/ConsumerHistory"
-    );
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
+import BasicLineChart from "../components/LineChart";
+import { getConsumerHistory } from '../api/api';
+import { calculateMonthlyProfit, processAveragePriceData, processPurchaseDistributionData, unitsSoldPerMonth } from '../utils/statsUtils';
 
 const StatsPage = () => {
   const [consumerHistory, setConsumerHistory] = useState([]);
   const [error, setError] = useState(null);
+  const [selectedGraph, setSelectedGraph] = useState("line");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,67 +28,48 @@ const StatsPage = () => {
     return <div>Error: {error.message}</div>;
   }
 
-  // Process data for charts
-  const averagePricePerConsumer = consumerHistory.reduce((acc, cur) => {
-    acc[cur.consumerId] = acc[cur.consumerId] || { total: 0, count: 0 };
-    acc[cur.consumerId].total += cur.price;
-    acc[cur.consumerId].count += 1;
-    return acc;
-  }, {});
-
-  const averagePriceData = {
-    x: Object.keys(averagePricePerConsumer),
-    y: Object.values(averagePricePerConsumer).map(
-      (val) => val.total / val.count
-    ),
-  };
-
-  const purchaseDistributionData = consumerHistory.reduce((acc, cur) => {
-    acc[cur.consumerId] = (acc[cur.consumerId] || 0) + 1;
-    return acc;
-  }, {});
-
-  const sortedData = Object.entries(purchaseDistributionData)
-    .sort((a, b) => b[1] - a[1])
-    .map(([id, value]) => ({ id: Number(id), value, label: `Consumer ${id}` }));
-
-  const top7Data = sortedData.slice(0, 5);
-  const otherValue = sortedData
-    .slice(5)
-    .reduce((acc, cur) => acc + cur.value, 0);
-  if (otherValue > 0) {
-    top7Data.push({ id: 0, value: otherValue, label: "Other" });
-  }
+  const averagePriceData = processAveragePriceData(consumerHistory);
+  const top7Data = processPurchaseDistributionData(consumerHistory);
+  const monthlyProfitData = calculateMonthlyProfit(consumerHistory);
+  const monthlyUnitsSold = unitsSoldPerMonth(consumerHistory);
 
   return (
     <div>
-      <Typography variant="h4" gutterBottom>
-        Consumer Stats
+     <Typography variant="h4" gutterBottom style={{ textAlign: 'center', margin: '20px 0', color: '#001F3F' }}>
+        Consumer Statistics
       </Typography>
-
       <Box sx={{ p: 2 }}>
-        <Grid justifyContent="space-between" container spacing={2}>
-          <Grid
-            sx={{ display: "flex", justifyContent: "center" }}
-            item
-            xs={12}
-            sm={6}
+        <FormControl variant="outlined" sx={{ minWidth: 200, marginBottom: 2 }}>
+          <InputLabel id="graph-select-label">Select Graph</InputLabel>
+          <Select
+            labelId="graph-select-label"
+            value={selectedGraph}
+            onChange={(e) => setSelectedGraph(e.target.value)}
+            label="Select Graph"
           >
-            <BasicBarChart data={averagePriceData} />
-          </Grid>
-          <Grid
-            sx={{ display: "flex", justifyContent: "center" }}
-            item
-            xs={12}
-            sm={6}
-          >
-            <BasicPieChart data={top7Data} />
-          </Grid>
-          {/* Could be a cool chart to display price fluctuation etc., can remove */}
-          {/* <Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
-            <BasicLineChart data={priceTrendData} width={1000} height={500} />
-          </Grid> */}
-        </Grid>
+            <MenuItem value="line">Monthly Profit</MenuItem>
+            <MenuItem value="bar-average">Average Sales Per Consumer</MenuItem>
+            <MenuItem value="pie">Top Consumers</MenuItem>
+            <MenuItem value="bar-units">Units Sold Per Month</MenuItem>
+          </Select>
+        </FormControl>
+
+        <Box 
+          sx={{ 
+            display: "flex", 
+            justifyContent: "center", 
+            alignItems: "center", 
+            minHeight: "60vh",
+            border: '2px solid #000', 
+            borderRadius: '8px', 
+            padding: '16px'
+          }}
+        >
+          {selectedGraph === "bar-average" && <BasicBarChart data={averagePriceData} width={600} height={600} xAxisLabel={"Consumer ID"} yAxisLabel={"Average Sales"} chartTitle={"Average Sales Per Consumer"} />}
+          {selectedGraph === "pie" && <BasicPieChart data={top7Data} width={800} height={600} />}
+          {selectedGraph === "line" && <BasicLineChart data={monthlyProfitData} width={500} height={300} />}
+          {selectedGraph === "bar-units" && <BasicBarChart data={monthlyUnitsSold} width={500} height={300} xAxisLabel={"Month"} yAxisLabel={"Units Sold"} chartTitle={"Units Sold Per Month"} />}
+        </Box>
       </Box>
     </div>
   );
