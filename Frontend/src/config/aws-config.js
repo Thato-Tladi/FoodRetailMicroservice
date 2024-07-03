@@ -2,8 +2,14 @@ const oauthConfig = {
   domain: "food-retailer.auth.eu-west-1.amazoncognito.com",
   scopes: ["email", "phone", "openid"],
   responseType: "code",
-  redirectSignIn: ["https://sustenance.projects.bbdgrad.com/"],
-  redirectSignOut: ["https://sustenance.projects.bbdgrad.com/"],
+  redirectSignIn: [
+    "https://sustenance.projects.bbdgrad.com/",
+    "http://localhost:3000/",
+  ],
+  redirectSignOut: [
+    "https://sustenance.projects.bbdgrad.com/",
+    "http://localhost:3000/",
+  ],
 };
 
 const awsConfig = {

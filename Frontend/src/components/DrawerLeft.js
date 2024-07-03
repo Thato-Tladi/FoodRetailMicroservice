@@ -20,8 +20,12 @@ import { Link } from "react-router-dom";
 import AppRoutes from "../routes";
 
 import LogoImage from "../assets/food_retailer_logo.png";
+import { signOut } from "@aws-amplify/auth";
 
 const drawerWidth = 240;
+const signOutCall = () => {
+  signOut();
+};
 
 function DrawerLeft() {
   const [open, setOpen] = useState(false);
@@ -104,7 +108,7 @@ function DrawerLeft() {
               <ListItemButton
                 component={Link}
                 to={`/${text.toLowerCase()}`}
-                onClick={handleItemClick}
+                onClick={signOutCall}
               >
                 <ListItemIcon>
                   <LogoutIcon />
