@@ -19,11 +19,15 @@ import TableChartIcon from "@mui/icons-material/TableChart";
 import { Link } from "react-router-dom";
 import AppRoutes from "../routes";
 
-import { getFinancialInfo } from '../api/api';
+import { getFinancialInfo } from "../api/api";
 import LogoImage from "../assets/food_retailer_logo.png";
-import '../css/appBarStyles.css';
+import { fetchAuthSession, signOut } from "@aws-amplify/auth";
 
 const drawerWidth = 240;
+const signOut1 = () => {
+  console.log("inside here");
+  signOut();
+};
 
 function DrawerLeft() {
   const [open, setOpen] = useState(false);
@@ -34,19 +38,20 @@ function DrawerLeft() {
       try {
         const data = await getFinancialInfo();
         const formattedData = data.map((item) => ({
-          name: item.propertyName.replace(/_/g, ' '),
+          name: item.propertyName.replace(/_/g, " "),
           value: item.propertyValue,
         }));
 
         const marqueeTextContent = formattedData.map((item) => (
           <span key={item.name}>
-            <span style={{ color: 'white' }}>{item.name}</span> : <span style={{ color: 'green' }}>{item.value}</span> | {' '}
+            <span style={{ color: "white" }}>{item.name}</span> :{" "}
+            <span style={{ color: "green" }}>{item.value}</span> |{" "}
           </span>
         ));
 
         setMarqueeText(marqueeTextContent);
       } catch (error) {
-        console.error('Error fetching financial info:', error);
+        console.error("Error fetching financial info:", error);
         setMarqueeText("Error loading data");
       }
     };
@@ -92,7 +97,7 @@ function DrawerLeft() {
               variant="h6"
               noWrap
               component="div"
-              sx={{ marginRight: '32px' }}
+              sx={{ marginRight: "32px" }}
             >
               Food Retailer Dashboard
             </Typography>
@@ -140,7 +145,7 @@ function DrawerLeft() {
               <ListItemButton
                 component={Link}
                 to={`/${text.toLowerCase()}`}
-                onClick={handleItemClick}
+                onClick={signOut1}
               >
                 <ListItemIcon>
                   <LogoutIcon />
