@@ -24,10 +24,16 @@ public class StockExchangeService
             Encoding.UTF8, "application/json");
 
         string callbackUrl = _config["AppSettings:Url"] + "/trading";
-        using HttpResponseMessage response = await _client.PostAsync($"businesses?callbackUrl=", jsonContent);
-        response.EnsureSuccessStatusCode();
-        var jsonResponse = await response.Content.ReadAsStringAsync();
 
-        StockExchangeRegisterDto registerResponse = JsonConvert.DeserializeObject<StockExchangeRegisterDto>(jsonResponse);
+        try
+        {
+            using HttpResponseMessage response = await _client.PostAsync($"businesses?callbackUrl='{callbackUrl}'", jsonContent);
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            StockExchangeRegisterDto registerResponse = JsonConvert.DeserializeObject<StockExchangeRegisterDto>(jsonResponse);
+        }
+        catch (Exception)
+        {
+        }
+
     }
 }

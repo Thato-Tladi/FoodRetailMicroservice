@@ -15,7 +15,7 @@ public class ConsumerHistoryRepository : IConsumerHistoryRepository
 
     public async Task<ICollection<ConsumerHistory>> GetEveryConsumerHistory()
     {
-        return await _foodRetailContext.ConsumerHistories.ToListAsync();
+        return await _foodRetailContext.ConsumerHistories.Take(50).ToListAsync();
     }
 
     public async Task<ConsumerHistory> AddConsumerHistory(ConsumerHistory consumerHistory)

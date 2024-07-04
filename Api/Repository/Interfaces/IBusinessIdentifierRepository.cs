@@ -8,5 +8,7 @@ public interface IBusinessIdentifierRepository
 
     Task ResetBusinessIdentifiers();
 
-    void SetBusinessIdentifier(BusinessIdentifierProperties identifier, string value);
+    Task<string> GetBusinessIdentifierValue(string identifier);
+
+    void SetBusinessIdentifier(string identifier, string value);
 }

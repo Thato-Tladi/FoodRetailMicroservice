@@ -6,7 +6,10 @@ public interface IBusinessIdentifierService
 {
     public Task<ICollection<BusinessIdentifier>> GetAllBusinessIdentifiers();
 
-    public void SetBusinessIdentifier(BusinessIdentifierProperties identifier, string value);
+    public void SetBusinessIdentifier(string identifier, string value);
+
+    public Task<string> GetBusinessIdentifier(string identifier);
 
     public Task ResetBusinessIdentifiers();
+
 }
