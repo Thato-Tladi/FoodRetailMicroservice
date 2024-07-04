@@ -25,31 +25,31 @@ public class RetailBankService
     /// <returns>true if the payment is successful; otherwise, false.</returns>
     public async Task<bool> MakePayment(long consumerId, double amount, string reference)
     {
-        // Create the payment request object
+
         var paymentRequest = new
         {
             senderId = consumerId,
             amountInMibiBBDough = amount,
             recepient = new
             {
-                bankId = 1001,  // Predefined bank ID for the recipient
-                accountId = "food-retailer"  // Predefined account ID for the recipient
+                bankId = 1001,
+                accountId = "food-retailer"
             },
             reference = reference
         };
 
-        // Serialize the request into JSON
+
         var content = new StringContent(JsonConvert.SerializeObject(paymentRequest), Encoding.UTF8, "application/json");
         
-        // Add necessary headers
+
         _httpClient.DefaultRequestHeaders.Add("X-PartnerId", "food_retailer");
 
         try
         {
-            // Send the POST request to the banking API
+
             var response = await _httpClient.PostAsync("/api/transactions/payments", content);
 
-            // Check if the HTTP response status indicates success
+
             if (response.IsSuccessStatusCode)
             {
                 _logger.LogInformation($"Payment successful for Consumer ID {consumerId}.");
@@ -64,7 +64,7 @@ public class RetailBankService
         }
         catch (Exception ex)
         {
-            // Log exceptions that might occur during the HTTP request
+
             _logger.LogError($"An error occurred during the payment transaction for Consumer ID {consumerId}: {ex.Message}");
             return false;
         }

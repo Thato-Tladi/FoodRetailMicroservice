@@ -12,7 +12,7 @@ namespace Api.Controllers;
 public class BuyController : ControllerBase
 {
     private readonly IConsumerHistoryService _consumerHistoryService;
-    private readonly RetailBankService _retailBankService;  // Dependency for bank transactions
+    private readonly RetailBankService _retailBankService;
 
     private readonly IFinancialInfoRepository _financialInfoRepository;
 
@@ -43,9 +43,8 @@ public class BuyController : ControllerBase
         }
 
         double amountToCheck = _financialInfoRepository.GetPropertyValue(FinancialInfoProperties.FOOD_PRICE);
-        string transactionReference = $"Purchase-{consumerId}-{System.DateTime.UtcNow.Ticks}";  // Unique reference for the transaction
+        string transactionReference = $"Purchase-{consumerId}-{System.DateTime.UtcNow.Ticks}"; 
 
-        // Make a payment to verify funds before proceeding with the purchase
         bool paymentSuccess = await _retailBankService.MakePayment(consumerId, amountToCheck, transactionReference);
 
         // if (!paymentSuccess)
