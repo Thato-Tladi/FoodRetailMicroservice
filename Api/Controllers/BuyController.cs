@@ -1,4 +1,6 @@
 using Api.Models;
+using Api.Repository;
+using Api.Repository.Interfaces;
 using Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -12,10 +14,17 @@ public class BuyController : ControllerBase
     private readonly IConsumerHistoryService _consumerHistoryService;
     private readonly RetailBankService _retailBankService;  // Dependency for bank transactions
 
-    public BuyController(IConsumerHistoryService consumerHistoryService, RetailBankService retailBankService)
+    private readonly IFinancialInfoRepository _financialInfoRepository;
+
+    public BuyController(
+            IConsumerHistoryService consumerHistoryService,
+            RetailBankService retailBankService,
+            IFinancialInfoRepository financialInfoRepository
+        )
     {
         _consumerHistoryService = consumerHistoryService;
         _retailBankService = retailBankService;
+        _financialInfoRepository = financialInfoRepository;
     }
 
     /// <summary>
@@ -33,17 +42,16 @@ public class BuyController : ControllerBase
             return BadRequest("Invalid consumerId provided.");
         }
 
-        // Example values for the payment check
-        double amountToCheck = 10;//financialInfoRepository.GetPropertyValue(FinancialInfoProperties.FOOD_PRICE);
+        double amountToCheck = _financialInfoRepository.GetPropertyValue(FinancialInfoProperties.FOOD_PRICE);
         string transactionReference = $"Purchase-{consumerId}-{System.DateTime.UtcNow.Ticks}";  // Unique reference for the transaction
 
         // Make a payment to verify funds before proceeding with the purchase
         bool paymentSuccess = await _retailBankService.MakePayment(consumerId, amountToCheck, transactionReference);
 
-        if (!paymentSuccess)
-        {
-            return StatusCode(402, "The consumer does not have enough funds.");
-        }
+        // if (!paymentSuccess)
+        // {
+        //     return StatusCode(402, "The consumer does not have enough funds.");
+        // }
 
         // If the payment is successful, proceed to log this transaction and complete the purchase
         ConsumerHistory consumerHistory = await _consumerHistoryService.AddConsumerHistory(consumerId);

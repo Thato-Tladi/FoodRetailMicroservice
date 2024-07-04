@@ -26,7 +26,6 @@ public class RetailBankService
     public async Task<bool> MakePayment(long consumerId, double amount, string reference)
     {
         // Create the payment request object
-        Console.WriteLine("STARTED");
         var paymentRequest = new
         {
             senderId = consumerId,
@@ -47,7 +46,6 @@ public class RetailBankService
 
         try
         {
-            Console.WriteLine("made it to here");
             // Send the POST request to the banking API
             var response = await _httpClient.PostAsync("/api/transactions/payments", content);
 

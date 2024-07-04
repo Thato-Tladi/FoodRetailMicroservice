@@ -78,26 +78,32 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddHttpClient<StockExchangeService>((serviceProvider, client) =>
 {
-    client.DefaultRequestHeaders.Add("X-Origin", BusinessConstants.BUSINESS_NAME);
+    client.DefaultRequestHeaders.Add("X-Origin", BusinessConstants.ORIGIN_NAME);
     client.BaseAddress = new Uri("https://api.mese.projects.bbdgrad.com");
 });
 
 builder.Services.AddHttpClient<CentralRevenueService>((serviceProvider, client) =>
 {
-    client.DefaultRequestHeaders.Add("X-Origin", BusinessConstants.BUSINESS_NAME);
+    client.DefaultRequestHeaders.Add("X-Origin", BusinessConstants.ORIGIN_NAME);
     client.BaseAddress = new Uri("https://api.mers.projects.bbdgrad.com");
 });
 
 builder.Services.AddHttpClient<CommercialBankService>((serviceProvider, client) =>
 {
-    client.DefaultRequestHeaders.Add("X-Origin", BusinessConstants.BUSINESS_NAME);
+    client.DefaultRequestHeaders.Add("X-Origin", BusinessConstants.ORIGIN_NAME);
     client.BaseAddress = new Uri("https://api.commercialbank.projects.bbdgrad.com");
 });
 
 builder.Services.AddHttpClient<RetailBankService>((serviceProvider, client) =>
 {
-    client.DefaultRequestHeaders.Add("X-Origin", BusinessConstants.BUSINESS_NAME);
+    client.DefaultRequestHeaders.Add("X-Origin", BusinessConstants.ORIGIN_NAME);
     client.BaseAddress = new Uri("https://api.retailbank.projects.bbdgrad.com");
+});
+
+builder.Services.AddHttpClient<HandOfZeusService>((serviceProvider, client) =>
+{
+    client.DefaultRequestHeaders.Add("X-Origin", BusinessConstants.ORIGIN_NAME);
+    client.BaseAddress = new Uri("https://api.zeus.projects.bbdgrad.com");
 });
 
 var app = builder.Build();

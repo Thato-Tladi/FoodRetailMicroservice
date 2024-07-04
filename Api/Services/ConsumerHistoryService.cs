@@ -8,11 +8,16 @@ public class ConsumerHistoryService : IConsumerHistoryService
 {
     private readonly IConsumerHistoryRepository _consumerHistoryRepository;
     private readonly IFinancialInfoRepository _financialInfoRepository;
+    private readonly IBusinessIdentifierRepository _businessIdentifierRepository;
 
-    public ConsumerHistoryService(IConsumerHistoryRepository consumerHistoryRepository, IFinancialInfoRepository financialInfoRepository)
+    public ConsumerHistoryService(
+        IConsumerHistoryRepository consumerHistoryRepository,
+        IFinancialInfoRepository financialInfoRepository,
+        IBusinessIdentifierRepository businessIdentifierRepository)
     {
         _consumerHistoryRepository = consumerHistoryRepository;
         _financialInfoRepository = financialInfoRepository;
+        _businessIdentifierRepository = businessIdentifierRepository;
     }
 
     public async Task<ConsumerHistory> AddConsumerHistory(long consumerId)
@@ -26,12 +31,12 @@ public class ConsumerHistoryService : IConsumerHistoryService
         ConsumerHistory consumerHistory = new()
         {
             ConsumerId = (int)consumerId,
-            PurchasedDate = DateTime.Now.ToString(),
+            PurchasedDate = await _businessIdentifierRepository.GetBusinessIdentifierValue(BusinessIdentifierProperties.DATE),
             Price = foodSellingPrice
         };
 
         consumerHistory = await _consumerHistoryRepository.AddConsumerHistory(consumerHistory);
-        await _financialInfoRepository.AddToProfit(foodSellingPrice);
+        await _financialInfoRepository.AddToProfit(foodSellingPrice - foodCostPrice);
 
         return consumerHistory;
     }

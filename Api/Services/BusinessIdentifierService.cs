@@ -8,14 +8,19 @@ public class BusinessIdentifierService : IBusinessIdentifierService
 {
     private readonly IBusinessIdentifierRepository _businessIdentifierRepository;
 
-    public BusinessIdentifierService(IBusinessIdentifierRepository BusinessIdentifierRepository)
+    public BusinessIdentifierService(IBusinessIdentifierRepository businessIdentifierRepository)
     {
-        _businessIdentifierRepository = BusinessIdentifierRepository;
+        _businessIdentifierRepository = businessIdentifierRepository;
     }
 
-    public void SetBusinessIdentifier(BusinessIdentifierProperties identifier, string value)
+    public void SetBusinessIdentifier(string identifier, string value)
     {
         _businessIdentifierRepository.SetBusinessIdentifier(identifier, value);
+    }
+
+    public async Task<string> GetBusinessIdentifier(string identifier)
+    {
+        return await _businessIdentifierRepository.GetBusinessIdentifierValue(identifier);
     }
 
     public async Task ResetBusinessIdentifiers()

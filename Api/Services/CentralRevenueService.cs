@@ -47,11 +47,7 @@ namespace Api.Services
             Console.WriteLine("Starting the tax payment process.");
             // Internal construction of TaxPaymentRequest based on fetched data
             long currentProfit =  _financialInfoRepository.GetPropertyValue(FinancialInfoProperties.PROFIT);
-            Console.WriteLine($"Retrieved current profit: {currentProfit}");
-            //string taxId = _businessIdentifierRepository.GetBusinessIdentifierValue(BusinessIdentifierProperties.TAX_ID);
             string taxId = "0053fd68-7271-483a-b373-779c3c5365f0";
-            Console.WriteLine($"Retrieved Tax ID: {taxId}");
-
             var request = new TaxPaymentRequest
             {
                 DebitAccountName = "BusinessAccount", // assuming account name, replace with actual if different
@@ -70,7 +66,7 @@ namespace Api.Services
                 TaxType = request.TaxType,
                 Amount = request.Amount
             });
-//Console.WriteLine($"Transaction status: {transactionResponse.Status}");
+
             var bankTransaction = new TransactionRequest
             {
                 Transactions = new[]
