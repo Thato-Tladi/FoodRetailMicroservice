@@ -46,7 +46,7 @@ public class FinancialInfoRepository : IFinancialInfoRepository
         await _foodRetailContext.SaveChangesAsync();
     }
 
-    public async void SetPropertyValue(FinancialInfoProperties property, long propertyValue)
+    public void SetPropertyValue(FinancialInfoProperties property, long propertyValue)
     {
         FinancialInfo? financialInfo = _foodRetailContext.FinancialInfos.FirstOrDefault(info => info.PropertyName == property.ToString());
 
@@ -54,6 +54,6 @@ public class FinancialInfoRepository : IFinancialInfoRepository
             return;
 
         financialInfo.PropertyValue = propertyValue;
-        await _foodRetailContext.SaveChangesAsync();
+        _foodRetailContext.SaveChanges();
     }
 }
