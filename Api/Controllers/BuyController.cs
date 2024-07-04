@@ -1,6 +1,7 @@
 using Api.Models;
 using Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Api.Controllers;
 
@@ -9,17 +10,19 @@ namespace Api.Controllers;
 public class BuyController : ControllerBase
 {
     private readonly IConsumerHistoryService _consumerHistoryService;
+    private readonly RetailBankService _retailBankService;  // Dependency for bank transactions
 
-    public BuyController(IConsumerHistoryService consumerHistoryService)
+    public BuyController(IConsumerHistoryService consumerHistoryService, RetailBankService retailBankService)
     {
         _consumerHistoryService = consumerHistoryService;
+        _retailBankService = retailBankService;
     }
 
     /// <summary>
-    /// Buy food for a consumer
+    /// Buy food for a consumer after checking funds availability.
     /// </summary>
-    /// <param name="consumerId"></param>
-    /// <returns>A response code depending on whether the buy was successful</returns>
+    /// <param name="consumerId">The identifier of the consumer making the purchase.</param>
+    /// <returns>A response code indicating the outcome of the buy attempt.</returns>
     /// <response code="200">Food has been purchased</response>
     /// <response code="402">The consumer does not have enough funds</response>
     [HttpGet]
@@ -27,9 +30,22 @@ public class BuyController : ControllerBase
     {
         if (consumerId == 0)
         {
-            return BadRequest("Invalid consumerId");
+            return BadRequest("Invalid consumerId provided.");
         }
 
+        // Example values for the payment check
+        double amountToCheck = 10;//financialInfoRepository.GetPropertyValue(FinancialInfoProperties.FOOD_PRICE);
+        string transactionReference = $"Purchase-{consumerId}-{System.DateTime.UtcNow.Ticks}";  // Unique reference for the transaction
+
+        // Make a payment to verify funds before proceeding with the purchase
+        bool paymentSuccess = await _retailBankService.MakePayment(consumerId, amountToCheck, transactionReference);
+
+        if (!paymentSuccess)
+        {
+            return StatusCode(402, "The consumer does not have enough funds.");
+        }
+
+        // If the payment is successful, proceed to log this transaction and complete the purchase
         ConsumerHistory consumerHistory = await _consumerHistoryService.AddConsumerHistory(consumerId);
 
         return Ok(consumerHistory);

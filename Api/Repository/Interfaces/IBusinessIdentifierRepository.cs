@@ -9,4 +9,6 @@ public interface IBusinessIdentifierRepository
     Task ResetBusinessIdentifiers();
 
     void SetBusinessIdentifier(BusinessIdentifierProperties identifier, string value);
+
+    public string GetBusinessIdentifierValue(string businessIdentifier);
 }

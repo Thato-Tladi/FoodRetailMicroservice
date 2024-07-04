@@ -9,4 +9,5 @@ public interface IBusinessIdentifierService
     public void SetBusinessIdentifier(BusinessIdentifierProperties identifier, string value);
 
     public Task ResetBusinessIdentifiers();
+
 }

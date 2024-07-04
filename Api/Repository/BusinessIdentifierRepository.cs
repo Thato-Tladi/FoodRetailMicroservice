@@ -39,4 +39,10 @@ public class BusinessIdentifierRepository : IBusinessIdentifierRepository
     {
         await _foodRetailContext.BusinessIdentifiers.ExecuteUpdateAsync(b => b.SetProperty(p => p.PropertyValue, p => ""));
     }
+
+    public string GetBusinessIdentifierValue(string businessIdentifier)
+    {
+        BusinessIdentifier? identifier = _foodRetailContext.BusinessIdentifiers.FirstOrDefault(b => b.PropertyName == businessIdentifier);
+        return identifier == null ? "" : identifier.PropertyValue;
+    }
 }

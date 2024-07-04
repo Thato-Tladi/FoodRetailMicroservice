@@ -82,6 +82,24 @@ builder.Services.AddHttpClient<StockExchangeService>((serviceProvider, client) =
     client.BaseAddress = new Uri("https://api.mese.projects.bbdgrad.com");
 });
 
+builder.Services.AddHttpClient<CentralRevenueService>((serviceProvider, client) =>
+{
+    client.DefaultRequestHeaders.Add("X-Origin", BusinessConstants.BUSINESS_NAME);
+    client.BaseAddress = new Uri("https://api.mers.projects.bbdgrad.com");
+});
+
+builder.Services.AddHttpClient<CommercialBankService>((serviceProvider, client) =>
+{
+    client.DefaultRequestHeaders.Add("X-Origin", BusinessConstants.BUSINESS_NAME);
+    client.BaseAddress = new Uri("https://api.commercialbank.projects.bbdgrad.com");
+});
+
+builder.Services.AddHttpClient<RetailBankService>((serviceProvider, client) =>
+{
+    client.DefaultRequestHeaders.Add("X-Origin", BusinessConstants.BUSINESS_NAME);
+    client.BaseAddress = new Uri("https://api.retailbank.projects.bbdgrad.com");
+});
+
 var app = builder.Build();
 
 app.UseCors(originsKey);
